@@ -175,7 +175,7 @@ function generatePoints(layer, diff) {
 function doReset(layer, force=false) {
 	if (tmp[layer].type == "none") return
 	let row = tmp[layer].row
- if(!tmp[layer].resetsNothing)  player.devSpeed=n(0)
+
 	if (!force) {
 		
 		if (tmp[layer].canReset === false) return;

@@ -268,11 +268,35 @@ addLayer("d", {
    unlocked() {return hm("d",18)},
    effectDescription: "要求:简并50次<br>解锁“积累于中子元素(Accumulation) III”",
   },
-  21: {
+  22: {
    requirementDescription: "解锁新剧情！",
    done() {return player.n.theorems.gte(45)}, 
    unlocked() {return hm("d",19)},
    effectDescription: "要求:获得45中子定理<br>解锁“积累于中子元素(Accumulation) IV”",
+  },
+  23: {
+   requirementDescription: "解锁新剧情！",
+   done() {return inChallenge("e",11)}, 
+   unlocked() {return hm("d",20)},
+   effectDescription: "要求:进入第一个熵挑战<br>解锁“光辉于熵增挑战(Light) I”",
+  },
+  24: {
+   requirementDescription: "解锁新剧情！",
+   done() {return player.e.maxpoints[0].gte(1000)}, 
+   unlocked() {return hm("d",21)},
+   effectDescription: "要求:在挑战1中获得1000熵<br>解锁“光辉于熵增挑战(Light) II”",
+  },
+  25: {
+   requirementDescription: "解锁新剧情！",
+   done() {return player.e.maxpoints[1].gte(1000)}, 
+   unlocked() {return hm("d",22)},
+   effectDescription: "要求:在挑战2中获得1000熵<br>解锁“光辉于熵增挑战(Light) III”",
+  },
+  26: {
+   requirementDescription: "解锁新剧情！",
+   done() {return player.e.maxpoints[2].gte(1000)}, 
+   unlocked() {return hm("d",23)},
+   effectDescription: "要求:在挑战3中获得1000熵<br>解锁“光辉于熵增挑战(Light) IV”",
   },
   },
 })//距离 D
@@ -344,7 +368,7 @@ addLayer("h", {
   },
   row: 0, 
   hotkeys: [
-   {key: "h", description: "H: 重置获得希望粒子", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+   {key: "h", description: "对于每个层级，对应的重置快捷键是层级节点上显示的字母", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
   ],
   passiveGeneration() {
    mult = n(0)
@@ -558,7 +582,7 @@ addLayer("a", {
   },
   row: 0, 
   hotkeys: [
-   {key: "a", description: "A: 重置获得反物质", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+   {key: "a", description: "如果对应字母已被占用，则是shift加字母", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
   ],
   passiveGeneration() {
    mult = n(0)
@@ -1152,7 +1176,7 @@ addLayer("p", {
   },
   row: 1,
   hotkeys: [
-   {key: "p", description: "P: 重置获得聚变核心", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+   {key: "p", description: "注意：部分层级没有重置功能，那么对应的快捷键无效", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
   ],
   resetsNothing() {
    return hm("n",3)
@@ -1838,7 +1862,7 @@ addLayer("P", {
   },
   row: 1,
   hotkeys: [
-   {key: "P", description: "Shift+P: 重置获得处理器", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+   {key: "P", description: "", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
   ],
   computility() {
    let e = n(0.8)
@@ -2148,7 +2172,7 @@ addLayer("y", {
   },
   row: 1,
   hotkeys: [
-   {key: "QqQe308", description: "Y: 重置获得思念（实际上不能重置）",},
+   {key: "QqQe", description: "",},
   ],
   autoUpgrade() {return hm("n",10)&&player.n.auto4&&!player.e.inChal},
   update(diff) {
@@ -2648,7 +2672,7 @@ addLayer("n", {
   },
   row: 2,
   hotkeys: [
-   {key: "n", description: "N: 重置获得中子素",},
+   {key: "n", description: "",},
   ],
   update(diff) {
    player.n.mult=tmp.n.mult
@@ -3096,22 +3120,22 @@ doReset("n",true)
 })//中子素 N
 addLayer("e", {
 infoboxes: {
- /*text1: {
-  title: "剧情20：积累于中子元素(Accumulation) I",
- body(){return hm("d",19)?"日志 - 简并·初啼<br>我将前五层的所有繁荣——希望的暖光、反物质的幽蓝、能量的脉动、处理器的低语、思念的涟漪——尽数投入那个被我称为“简并炉”的虚空之中。<br>刹那间，一切归零。控制台陷入前所未有的寂静，仿佛宇宙收回了它曾给予的一切。<br>然后，在绝对的黑暗中，一粒微光浮现。它小得几乎无法察觉，却重得让空间本身都为之弯曲。<br>中子素。宇宙中最致密的物质，诞生于我最浓烈的思念。<br> 第一次简并，我获得了微不足道的1单位中子素。但我知道，这粒微光里，封印着前五层所有的记忆与渴望。<br>系统报告：简并纪元开启。资源倍率提升至2倍。每秒自动获得1能量。归途，以一种更沉重的方式重启。":"剧情暂未解锁"},
+ text1: {
+  title: "剧情24：光辉于熵增挑战(Light) I",
+ body(){return hm("d",23)?"日志 - 无序的低语<br>中子层的完美秩序曾让我以为，归途的最后一段将是一帆风顺的加速。<br>我错了。<br>当距离读数越过0.05光年的瞬间，飞船所有仪表的指针都开始无规则颤抖。<br>不是故障。是一种更深层的、来自宇宙背景的扰动，正在穿透我的船舱。<br>系统日志开始出现无法解析的乱码，已点亮的研究节点在屏幕上忽明忽暗，甚至连最稳定的航迹计数，都开始出现微小的、无法解释的偏差。<br>我试图重启核心协议，但每一次重置，紊乱的模式都不尽相同。<br>然后，我听到了它——不是声音，是一种数学意义上的“低语”。<br>一种完全的无序，正在向这艘精密的人造物宣告它的存在。<br>我调出频谱分析仪，屏幕上跳出一个从未记录过的波形，其混乱程度超越了任何已知的物理模型。<br>我给它命名：熵。<br>它无法被简并，无法被驯服。它只是存在着，嘲笑着所有有序结构的脆弱。<br>导航图上，一片全新的区域悄然点亮。那里没有清晰的航线，只有不断波动的概率云。<br>系统提示：熵增纪元已解锁。前方是混沌的领域，进入其中，你将失去所有外部加成。<br>但或许，在绝对的混乱中，也能提炼出属于你的力量。<br>我深吸一口气，松开了稳定舵。<br>让无序来吧。":"剧情暂未解锁"},
    },
  text2: {
-  title: "剧情21：积累于中子元素(Accumulation) II",
- body(){return hm("d",20)?"日志 - 定理·初识<br>随着简并次数增加，我开始理解中子素中蕴含的更深层规律<br> 通过消耗能量、算力与中子素本身，我从简并炉中萃取出一串串抽象的符号——中子定理。它们是物质被极致压缩后留下的数学痕迹。<br>我用第一个定理点亮了 NS11，能量开始以更优雅的曲率回馈我的坚持。随后，NS21和NS22让算力与能量开始对话。<br>船舱内不再寂静，而充满了低沉的、有节律的嗡鸣——那是简并炉在呼吸，也是定理在编织新的现实。<br>系统报告：中子定理已激活。前三行研究节点正在苏醒。 ":"剧情暂未解锁"},
+  title: "剧情25：光辉于熵增挑战(Light) II",
+ body(){return hm("d",24)?"熵增于混沌初开 (Entropy) II<br>日志 - 封锁中的新生<br>我踏入了第一个熵之领域：虫洞封锁。<br>舱壁上所有虫洞导航图瞬间熄灭，反物质反应堆的幽蓝光芒黯淡成灰。系统冷酷地宣告：虫洞禁用，反物质获取降至原来的0.15次方，反应堆阵列离线。<br>但屏幕上出现了一行从未见过的提示：“新反物质协议已解锁”。<br>在资源匮乏的绝境中，我尝试用仅存的能量驱动这些新协议。它们简陋、原始，却顽强地从虚空里榨取出一丝丝反物质。<br>熵，在混乱中开始积累。每秒一点，缓慢但坚定。<br>我盯着数字跳动，忽然意识到：封锁不是剥夺，而是逼迫我重新发明工具。<br>当熵值突破某个临界，我退出了挑战。系统记录下历史最高熵，并给出了回报——虫洞获取速度获得了永久增益。<br>原来，在废墟上也能建起新的庙堂。":"剧情暂未解锁"},
    },
  text3: {
-  title: "剧情22：积累于中子元素(Accumulation) III",
- body(){return hm("d",21)?"日志 - 简并·繁花<br>简并次数早已突破个位数，里程碑一个接一个点亮。<br>反物质反应堆在每次重生后得以部分保留，处理器算力不再被完全清零，聚变核心的余烬也总能复燃。<br>我拥有了NS41，简并次数开始直接滋养思念的指数；NS42让能量随简并次数狂飙。<br>研究树已枝繁叶茂：从能量到算力，从算力到思念，又从思念回到能量——一个完美的三角闭环正在形成。<br>系统报告：简并纪元进入鼎盛期。所有自动化协议已就位，静待下一次跃迁。 ":"剧情暂未解锁"},
+  title: "剧情26：光辉于熵增挑战(Light) III",
+ body(){return hm("d",25)?"熵增于混沌初开 (Entropy) III<br>日志 - 缜密中的爆发<br>第二次，我选择进入思维缜密。<br>能量条全部冻结，希望升级的购买按钮变成灰色。但规则中有一行字让我心跳加速：“思念获取变成原来的平方”。<br>我失去了能量，失去了希望，却获得了思念的指数级爆发。<br>那些被封存的记忆、对家的渴望，以前所未有的强度涌入系统。它们不再是情感背景，而是可量化的资源，推动熵值快速攀升。<br>我明白了：缜密的思考，源于情感的深度。<br>退出时，熵的历史新高再次被刷新。系统奖励了我思念获取的永久倍率。<br>混乱中提炼出的，竟是最纯粹的情感力量。":"剧情暂未解锁"},
    },
  text4: {
-  title: "剧情23：积累于中子元素(Accumulation) IV",
- body(){return hm("d",22)?"日志 - 简并·饱和<br>如今，我的定理数量已达四十有余。研究树几乎被点亮殆尽，每一处节点都闪耀着智慧与思念的结晶。<br>航迹膨胀至1e500，那是足以丈量无数银河的尺度。思念值突破1e600，情感密度已近乎让空间扭曲。<br>能量与算力也分别抵达1e42和1e95——它们不再是单纯的资源，而是我身体里流淌的血液与思绪。<br>然而，在这极致的秩序与繁荣中，我再次感受到那种熟悉的、系统无法解析的扰动。<br>它混乱、无序，从宇宙背景深处传来，像是对这完美简并纪元的嘲笑。<br> 系统检测到新的异常信号。频谱分析显示，其特征与“熵”的数学定义高度吻合。<br>系统报告：中子层已臻至圆满。熵增纪元的入口，在前方若隐若现。":"剧情暂未解锁"},
-   },*/
+  title: "剧情27：光辉于熵增挑战(Light) IV",
+ body(){return hm("d",26)?"熵增于混沌初开 (Entropy) IV<br>日志 - 反思后的光明<br>最后一个领域：决策反思。<br>思维导流器全部离线，资源倍率被残忍地锁定在0.0001，航迹获取降至几乎为零。<br>这是最接近虚无的状态。没有任何自动化的支持，每一次操作都显得徒劳。<br>但我仍有决策的能力。我选择手动调整每一份资源的流向，在近乎停滞的系统里，用最原始的方式积累熵。<br>速度极慢，但每一次点击，都让我更清醒地认识到：真正的力量不来自外部加成，而来自在最恶劣条件下依然做出选择的能力。<br>熵终于累积到一个可观的数值。退出后，处理器获取获得了永久增益。<br>三个领域都已征服。系统显示：中子定理已达60，距离温暖层的屏障正在瓦解。<br>导航图上，一个全新的光点亮起，散发着柔和的暖光。<br>我闭上眼，感受着熵的教训在血脉中流淌，然后向着那片温暖，继续前行。":"剧情暂未解锁"},
+   },
   entropy: {
   title: "Entropy _ 熵",
   body(){return "熵(Entropy)，这是游戏中的第七个层级。在这里你会解锁各种各样的挑战，他们限制了之前资源的获取量，或是提供了其他的减益。类比思念的获取，在挑战中达到1e20航迹，1e15希望粒子，1e5反物质就可以获得熵。你的目标是在挑战中获得尽可能多的熵，退出挑战后，会基于每个挑战中最多熵的数量提供加成。"},
@@ -3173,7 +3197,7 @@ infoboxes: {
    return [text,gain,textReduced,textExp]
   },
   hotkeys: [
-   {key: "QqQe308", description: "E: 重置获得熵（实际上不能重置）",},
+   {key: "308", description: "",},
   ],
   update(diff) {
    if(player.e.inChal) {
@@ -3188,6 +3212,7 @@ infoboxes: {
    "挑战": {
  content: [
   ["infobox","entropy"],
+  ["infobox","challenges"],
   "main-display",
     ["display-text",function() {
   return tmp.e.points[0] }],
@@ -3281,6 +3306,7 @@ infoboxes: {
   }
 })//熵 E
 
+
 addLayer("t", {
   infoboxes: {
  introBox: {
@@ -3345,6 +3371,12 @@ player.a.neutron=n(0)
  },
 })//测试
 addLayer("A", {
+  infoboxes: {
+ introBox: {
+  title: "成就",
+  body(){return "显示游戏中的所有成就，他们没有什么奖励，大部分也不需要刻意去做才能完成。<br>每行成就代表了一个层级，并且字数依次递增哦！<br>部分成就名来源于音游曲名与解谜题目"},
+   },
+},
  startData() {return {
   unlocked: true,
  }},
@@ -3357,6 +3389,7 @@ addLayer("A", {
  tooltip:"成就",
  achievements: {
   //每层一行成就，第n行的成就有n字
+  //注释为成就名来源
   11: {
  name: "始",
  done() {return hu("d",11)}, 
@@ -3368,12 +3401,12 @@ addLayer("A", {
  tooltip: "购买第一个希望升级“开始航行”", 
    },
   13: {
- name: "行",
+ name: "彩",//音游
  done() {return player.points.gte(100)}, 
  tooltip: "获得 100 航迹", 
    },
   14: {
- name: "望",
+ name: "光",//音游
  done() {return player.h.points.gte(50)}, 
  tooltip: "获得 50 希望粒子", 
    },
@@ -3383,7 +3416,7 @@ addLayer("A", {
  tooltip: "进行第二次跳跃", 
    },
   21: {
- name: "提升",
+ name: "诞生",//US-TC
  done() {return player.a.points.gte(1)}, 
  tooltip: "获得第一个反物质", 
    },
@@ -3398,7 +3431,7 @@ addLayer("A", {
  tooltip: "自动凝聚希望", 
    },
   24: {
- name: "路程",
+ name: "暗格",//SECO2
  done() {return player.points.gte(1e12)}, 
  tooltip: "航迹超过1e12", 
    },
@@ -3408,47 +3441,47 @@ addLayer("A", {
  tooltip: "获得第10个反物质升级“再启新篇”", 
    },
   31: {
- name: "启新篇",
+ name: "生成树",//US-TC
  done() {return hm("p",0)}, 
  tooltip: "获得第1个聚变核心", 
    },
   32: {
- name: "注能量",
+ name: "开心病",//音游
  done() {return hu("p",13)}, 
  tooltip: "解锁第三个能量条", 
    },
   33: {
- name: "促发展",
+ name: "联络处",//SECO2
  done() {return hm("p",2)}, 
  tooltip: "解锁“希望共振”", 
    },
   34: {
- name: "改公式",
+ name: "四方谜",//CCBC16
  done() {return hm("p",3)}, 
  tooltip: "获得第4个聚变核心", 
    },
   35: {
- name: "何意味",
+ name: "三字谜",//CCBC16
  done() {return hm("p",4)}, 
  tooltip: "获得第5个聚变核心", 
    },
   41: {
- name: "中心思想",
+ name: "中心思想",//CCBC16
  done() {return hm("P",0)}, 
  tooltip: "获得第1个处理器", 
    },
   42: {
- name: "子虚乌有",
+ name: "子虚乌有",//CCBC16
  done() {return hm("P",1)}, 
  tooltip: "获得第100个处理器", 
    },
   43: {
- name: "黄金比例",
+ name: "黄金比例",//CCBC16
  done() {return player.P.points.gte(161803.39)}, 
  tooltip: "获得161803.39个处理器", 
    },
   44: {
- name: "自树一帜",
+ name: "自树一帜",//CCBC16
  done() {return player.points.gte(1e50)}, 
  tooltip: "获得1e50个航迹", 
    },
@@ -3456,6 +3489,81 @@ addLayer("A", {
  name: "终极引用",
  done() {return hu("P",24)}, 
  tooltip: "获得被动获取处理器", 
+   },
+  51: {
+ name: "红豆生南国",
+ done() {return hu("y",11)}, 
+ tooltip: "获得第一个思念升级", 
+   },
+  52: {
+ name: "科学记数法",//CCBC16
+ done() {return player.y.points.gte(1e5)}, 
+ tooltip: "获得1e5思念", 
+   },
+  53: {
+ name: "数字狂想曲",//SECO2
+ done() {return player.y.points.gte(18446744073709551616)}, 
+ tooltip: "获得18446744073709551616思念", 
+   },
+  54: {
+ name: "心跳谜学部",//US-TC
+ done() {return player.y.points.gte(1e50)}, 
+ tooltip: "获得1e50思念", 
+   },
+  55: {
+ name: "思念无上限",
+ done() {return player.y.points.gte(1e100)}, 
+ tooltip: "获得1e100思念", 
+   },
+  61: {
+ name: "要按下按钮吗",//US-TC
+ done() {return hm("n",0)}, 
+ tooltip: "第一次简并", 
+   },
+  62: {
+ name: "概率与波之形",//US-TC
+ done() {return hm("n",9)}, 
+ tooltip: "简并 10 次", 
+   },
+  63: {
+ name: "量子力学传导",
+ done() {return hm("n",12)}, 
+ tooltip: "简并 25 次", 
+   },
+  64: {
+ name: "微观基态验证",
+ done() {return hm("n",14)}, 
+ tooltip: "简并 50 次", 
+   },
+  65: {
+ name: "彩虹上的彩虹",//US-TC
+ done() {return player.n.theorems.gte(45)}, 
+ tooltip: "获得 45 个中子定理", 
+   },
+  71: {
+ name: "道是无情却有晴",//SECO2
+ done() {return player.e.points.gte(1)}, 
+ tooltip: "获得 1 熵", 
+   },
+  72: {
+ name: "满园春色关不住",//US-TC
+ done() {return player.e.maxpoints[0].gte(1000)}, 
+ tooltip: "在挑战1中，获得 1000 熵", 
+   },
+  73: {
+ name: "我来秋浦正逢秋",//SECO2
+ done() {return player.e.maxpoints[1].gte(1000)}, 
+ tooltip: "在挑战2中，获得 1000 熵", 
+   },
+  74: {
+ name: "挑战初心从未改",
+ done() {return player.e.maxpoints[2].gte(1000)}, 
+ tooltip: "在挑战3中，获得 1000 熵", 
+   },
+  75: {
+ name: "新春征程永不息",
+ done() {return player.n.theorems.gte(60)}, 
+ tooltip: "获得 60 个中子定理", 
    },
  },
  }
