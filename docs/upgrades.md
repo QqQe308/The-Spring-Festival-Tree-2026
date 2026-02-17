@@ -27,7 +27,7 @@ Individual upgrades can have these features:
 
 - title: **optional**. Displayed at the top in a larger font. It can also be a function that returns updating text. Can use basic HTML.
 
-- description: A description of the upgrade's effect. *You will also have to implement the effect where it is applied.* It can also be a function that returns updating text. Can use basic HTML.
+- description: A description of the upgrade's effect. _You will also have to implement the effect where it is applied._ It can also be a function that returns updating text. Can use basic HTML.
 
 - effect(): **optional**. A function that calculates and returns the current values of any bonuses from the upgrade. Can return a value or an object containing multiple values.
 
@@ -64,7 +64,5 @@ If you want to do something more complicated like upgrades that cost two currenc
 - canAfford(): **OVERRIDE**, a function determining if you are able to buy the upgrade. (If you also have a cost, it will check both the cost and this function)
 
 - pay(): **OVERRIDE**, a function that reduces your currencies when you buy the upgrade
-
-
 
 - branches: **optional**, This is primarially useful for upgrade trees. An array of upgrade ids. A line will appear from this upgrade to all of the upgrades in the list. Alternatively, an entry in the array can be a 2-element array consisting of the upgrade id and a color value. The color value can either be a string with a hex color code, or a number from 1-3 (theme-affected colors). A third element in the array optionally specifies line width.

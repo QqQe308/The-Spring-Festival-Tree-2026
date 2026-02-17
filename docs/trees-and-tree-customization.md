@@ -5,7 +5,9 @@ of the tree, including making non-layer nodes, change it into something other th
 This also introduces the "tree" component, which can be used in your layers as well.
 
 ## layoutInfo
+
 The most important part is layoutInfo, containing:
+
 - startTab: The id of the default tab to show on the right at the start.
 - startNavTab: The id of the default tab to show on the left at the start.
 
@@ -20,10 +22,12 @@ The tree component is defined as an array of arrays of names of layers or nodes 
 nodes in the main tree (but branches between nodes will only work on the first node if you have duplicates.)
 
 Here is an example tree:
+
 ```js
-[["p"],
- ["left", "blank", "right", "blank"]
- ["a", "b", "blank", "c", "weirdButton"]]
+[
+  ["p"],
+  ["left", "blank", "right", "blank"][("a", "b", "blank", "c", "weirdButton")],
+];
 ```
 
 ## Nodes
@@ -51,4 +55,4 @@ Features:
 - row: **optional**, the row that this node appears in (for the default tree).
 
 - position: **optional**, Determines the horizontal position of the layer in its row in a default tree. By default, it uses the id,
-and layers/nodes are sorted in alphabetical order.
+  and layers/nodes are sorted in alphabetical order.

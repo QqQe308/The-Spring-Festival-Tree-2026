@@ -27,7 +27,6 @@ clickables: {
 Features:
 
 - title: **optional**. displayed at the top in a larger font. It can also be a function that returns updating text.
-                    
 - effect(): **optional**. A function that calculates and returns the current values of bonuses of this clickable. Can return a value or an object containing multiple values.
 
 - display(): A function returning everything that should be displayed on the clickable after the title, likely changing based on its state. Can use basic HTML.
@@ -36,7 +35,7 @@ Features:
 
 - canClick(): A function returning a bool to determine if you can click the clickable.
 
-- onClick(): A function that implements clicking the clickable. 
+- onClick(): A function that implements clicking the clickable.
 
 - onHold(): **optional** A function that is called 20x/sec when the button is held for at least 0.25 seconds.
 
@@ -57,7 +56,5 @@ You can also use these features on the clickables object to add a button above a
 - masterButtonText: **optional**. Text to display on the Master Button.
 
 - showMasterButton(): **optional**. A function determining whether or not to show the button, if masterButtonPress is defined. Defaults to true if absent.
-
-
 
 - branches: **optional**, This is primarially useful for clickable trees. An array of clickable ids. A line will appear from this clickable to all of the clickables in the list. Alternatively, an entry in the array can be a 2-element array consisting of the clickable id and a color value. The color value can either be a string with a hex color code, or a number from 1-3 (theme-affected colors). A third element in the array optionally specifies line width.

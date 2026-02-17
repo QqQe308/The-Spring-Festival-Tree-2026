@@ -28,15 +28,15 @@ Individual Challenges can have these features:
 
 - name: Name of the challenge, can be a string or a function. Can use basic HTML.
 
-- challengeDescription: A description of what makes the challenge a challenge. *You will need to implement these elsewhere.* It can also be a function that returns updating text. Can use basic HTML.
+- challengeDescription: A description of what makes the challenge a challenge. _You will need to implement these elsewhere._ It can also be a function that returns updating text. Can use basic HTML.
 
 - goalDescription: A description of the win condition for the challenge. It can also be a function that returns updating text.
-    Can use basic HTML. (Optional if using the old goal system)
+  Can use basic HTML. (Optional if using the old goal system)
 
 - canComplete(): A function that returns true if you meet the win condition for the challenge. Returning a number will allow bulk completing the challenge.
-    (Optional if using the old goal system)
+  (Optional if using the old goal system)
 
-- rewardDescription: A description of the reward's effect. *You will also have to implement the effect where it is applied.* It can also be a function that returns updating text. Can use basic HTML.
+- rewardDescription: A description of the reward's effect. _You will also have to implement the effect where it is applied._ It can also be a function that returns updating text. Can use basic HTML.
 
 - rewardEffect(): **optional**. A function that calculates and returns the current values of any bonuses from the reward. Can return a value or an object containing multiple values. Can use basic HTML.
 
@@ -64,8 +64,6 @@ Individual Challenges can have these features:
 
 - id: **assigned automagically**. It's the "key" which the challenge was stored under, for convenient access. The challenge in the example's id is 11.
 
-
-
 The old goal system uses these features:
 
 - goal: **deprecated**, A Decimal for the amount of currency required to beat the challenge. By default, the goal is in basic Points. The goal can also be a function if its value changes.
@@ -77,4 +75,3 @@ The old goal system uses these features:
 - currencyLayer: **deprecated**. the internal name of the layer that currency is stored in. If it's not in a layer, omit. If it's not stored directly in a layer, instead use the next feature.
 
 - currencyLocation(): **deprecated**. if your currency is stored in something inside a layer (e.g. a buyable's amount), you can access it this way. This is a function returning the object in "player" that contains the value (like `player[this.layer].buyables`)
-

@@ -24,7 +24,7 @@ Features:
 - width, height: The size in pixels of the bar, but as numbers (no "px" at the end).
 
 - progress(): A function that returns the portion of the bar that is filled, from "empty" at 0 to "full" at 1, updating automatically.
-    (Nothing bad happens if the value goes out of these bounds, and it can be a number or `Decimal`)
+  (Nothing bad happens if the value goes out of these bounds, and it can be a number or `Decimal`)
 
 - display(): **optional**. A function that returns text to be displayed on top of the bar, can use HTML.
 
@@ -35,6 +35,5 @@ Features:
 - layer: **assigned automagically**. It's the same value as the name of this layer, so you can do `player[this.layer].points` or similar.
 
 - id: **assigned automagically**. It's the "key" which the bar was stored under, for convenient access. The bar in the example's id is "bigBar".
-
 
 - instant: **very optional**. If this is true, the bar will instantly snap to the current value instead of animating in between. Good for things involving precise timing.

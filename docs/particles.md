@@ -12,7 +12,7 @@ const myParticle {
     gravity: 2,
     time: 3,
     speed() { // Randomize speed a bit
-        return (Math.random() + 1.2) * 8 
+        return (Math.random() + 1.2) * 8
     },
     etc...
 }
@@ -51,7 +51,6 @@ Function features: These stay as functions and are for more advanced things. The
 
 - update(): Called each tick. Lets you do more advanced visual and movement behaviors by changing other properties.
 - onClick(), onMouseOver(), onMouseLeave(): Called when the particle is interacted with.
-
 
 Other useful things that are not features of the particle object:
 

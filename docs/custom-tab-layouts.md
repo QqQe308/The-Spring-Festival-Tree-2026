@@ -6,19 +6,23 @@ Custom tab layouts can be used to do basically anything in a tab window, especia
 
 ```js
 tabFormat: [
-    "main-display",
-    ["prestige-button"],
-    "blank",
-    ["display-text",
-        function() { return 'I have ' + format(player.points) + ' pointy points!' },
-        { "color": "red", "font-size": "32px", "font-family": "Comic Sans MS" }],
-    "blank",
-    ["toggle", ["c", "beep"]],
-    "milestones",
-    "blank",
-    "blank",
-    "upgrades"
-]
+  "main-display",
+  ["prestige-button"],
+  "blank",
+  [
+    "display-text",
+    function () {
+      return "I have " + format(player.points) + " pointy points!";
+    },
+    { color: "red", "font-size": "32px", "font-family": "Comic Sans MS" },
+  ],
+  "blank",
+  ["toggle", ["c", "beep"]],
+  "milestones",
+  "blank",
+  "blank",
+  "upgrades",
+];
 ```
 
 It is a list of components, which can be either just a name, or an array with arguments. If it's an array, the first item is the name of the component, the second is the data passed into it, and the third (optional) applies a CSS style to it with a "CSS object", where the keys are CSS attributes.
@@ -46,14 +50,14 @@ These are the existing components, but you can create more in [components.js](/j
 - prestige-button: The button to reset for a currency in this layer.
 
 - text-input: A text input box. The argument is the name of the variable in player[layer] that the input is for, player[layer][argument]
-    (Works with strings, numbers, and Decimals!)
+  (Works with strings, numbers, and Decimals!)
 
 - slider: Lets the user input a value with a slider. The argument a 3-element array: [name, min, max].
-    The name is the name of the variable in player[layer] that the input  is for, and min and max are the limits of the slider.
-    (Does not work for Decimal values)
+  The name is the name of the variable in player[layer] that the input is for, and min and max are the limits of the slider.
+  (Does not work for Decimal values)
 
 - drop-down: Lets the user input a value with a dropdown menu. The argument a 2-element array: [name, options].
-    The name is the name of the variable in player[layer] that the input is for, and options is an array of strings for options you can use.
+  The name is the name of the variable in player[layer] that the input is for, and options is an array of strings for options you can use.
 
 - upgrades, milestones, challenges, achievements, buyables, clickables: Displays the layers upgrades/challenges/etc, as appropriate. The argument is optional, and is a the list of rows this component should include, if it doesn't have all of them.
 
@@ -64,7 +68,7 @@ These are the existing components, but you can create more in [components.js](/j
 - infobox: Display an infobox. The argument is the id of the infobox to display.
 
 - tree: Displays a tree. The argument is an array of arrays containing the names of the nodes in the tree (first by row, then by column)
-    [See here for more information on tree layouts and nodes!](trees-and-tree-customization.md)
+  [See here for more information on tree layouts and nodes!](trees-and-tree-customization.md)
 
 - upgrade-tree, buyable-tree, clickable-tree: Displays a tree of upgrades/buyables/clickables from this layer. The argument is an array of arrays containing the ids of the upgrade/etc in the tree (first by row, then by column). A tree can only have one type of component in it.
 
@@ -73,8 +77,7 @@ These are the existing components, but you can create more in [components.js](/j
 - grid: Displays the gridable grid for the layer. If you need more than one grid, use a layer proxy. The argument is optional, and is a the list of rows this component should include, if it doesn't have all of them.
 
 - layer-proxy: Lets you use components from another layer. The argument is a pair, `[layer, data]`, consisting of the id of the layer to proxy from, and the tabFormat for the components to show.
-    (Note: you cannot use a microtab within a layer proxy)
-
+  (Note: you cannot use a microtab within a layer proxy)
 
 The rest of the components are sub-components. They can be used just like other components, but are typically part of another component.
 

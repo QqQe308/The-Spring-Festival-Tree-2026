@@ -19,7 +19,7 @@ Milestone features:
 
 - requirementDescription: A string describing the requirement for unlocking this milestone. Suggestion: Use a "total". It can also be a function that returns updating text. Can use basic HTML.
 
-- effectDescription: A string describing the reward for having the milestone. *You will have to implement the reward elsewhere.* It can also be a function that returns updating text. Can use basic HTML.
+- effectDescription: A string describing the reward for having the milestone. _You will have to implement the reward elsewhere._ It can also be a function that returns updating text. Can use basic HTML.
 
 - done(): A function returning a boolean to determine if the milestone should be awarded.
 
@@ -27,7 +27,7 @@ Milestone features:
 
 - toggles: **optional**. Creates toggle buttons that appear on the milestone when it is unlocked. The toggles can toggle a given boolean value in a layer. It is defined as an array of paired items, one pair per toggle. The first is the internal name of the layer the value being toggled is stored in, and the second is the internal name of the variable to toggle. (e.g. [["b", "auto"], ["g", "auto"])
 
-   **Tip:** Toggles are not de-set if the milestone becomes locked! In this case, you should also check if the player has the milestone.
+  **Tip:** Toggles are not de-set if the milestone becomes locked! In this case, you should also check if the player has the milestone.
 
 - style: **optional**. Applies CSS to this milestone, in the form of an object where the keys are CSS attributes, and the values are the values for those attributes (both as strings).
 

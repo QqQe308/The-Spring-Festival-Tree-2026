@@ -116,6 +116,7 @@
         n <= t.heap_len &&
         (n < t.heap_len && A(e, t.heap[n + 1], t.heap[n], t.depth) && n++,
         !A(e, i, t.heap[n], t.depth));
+
       )
         ((t.heap[a] = t.heap[n]), (a = n), (n <<= 1));
       t.heap[a] = i;
@@ -658,6 +659,7 @@
             r++,
             t.insert--,
             !(t.lookahead + t.insert < 3));
+
           );
       } while (t.lookahead < ot && 0 !== t.strm.avail_in);
     },
@@ -1059,6 +1061,7 @@
               ct(t),
               (a = n.pending),
               n.pending !== n.pending_buf_size));
+
           )
             (wt(n, 255 & n.gzhead.extra[n.gzindex]), n.gzindex++);
           (n.gzhead.hcrc &&
@@ -1294,6 +1297,7 @@
       for (
         t.avail_in = a, t.next_in = 0, t.input = e, mt(i);
         i.lookahead >= 3;
+
       ) {
         let t = i.strstart,
           e = i.lookahead - 2;
@@ -1535,6 +1539,7 @@
         a.next_in = 0,
         a.avail_in = a.input.length;
       ;
+
     )
       if (
         (0 === a.avail_out &&
@@ -1831,6 +1836,7 @@
         for (
           0 === v && (v = m), c += g, y = 1 << (k = w - v);
           k + v < p && !((y -= R[k + v]) <= 0);
+
         )
           (k++, (y <<= 1));
         if (((x += 1 << k), (1 === t && x > 852) || (2 === t && x > 592)))
@@ -2351,6 +2357,7 @@
                     ((z = a.lencode[h & ((1 << a.lenbits) - 1)]) >>> 16) & 255),
                     (p = 65535 & z),
                     !((b = z >>> 24) <= d);
+
                 ) {
                   if (0 === l) break t;
                   (l--, (h += i[s++] << d), (d += 8));
@@ -2454,6 +2461,7 @@
                   ((z = a.lencode[h & ((1 << a.lenbits) - 1)]) >>> 16) & 255),
                   (p = 65535 & z),
                   !((b = z >>> 24) <= d);
+
               ) {
                 if (0 === l) break t;
                 (l--, (h += i[s++] << d), (d += 8));
@@ -2467,6 +2475,7 @@
                     255),
                     (p = 65535 & z),
                     !(m + (b = z >>> 24) <= d);
+
                 ) {
                   if (0 === l) break t;
                   (l--, (h += i[s++] << d), (d += 8));
@@ -2507,6 +2516,7 @@
                   ((z = a.distcode[h & ((1 << a.distbits) - 1)]) >>> 16) & 255),
                   (p = 65535 & z),
                   !((b = z >>> 24) <= d);
+
               ) {
                 if (0 === l) break t;
                 (l--, (h += i[s++] << d), (d += 8));
@@ -2520,6 +2530,7 @@
                     255),
                     (p = 65535 & z),
                     !(m + (b = z >>> 24) <= d);
+
                 ) {
                   if (0 === l) break t;
                   (l--, (h += i[s++] << d), (d += 8));
@@ -2751,6 +2762,7 @@
         a.next_in = 0,
         a.avail_in = a.input.length;
       ;
+
     ) {
       for (
         0 === a.avail_out &&
@@ -2761,6 +2773,7 @@
               ? (s = xe.inflate(a, r))
               : s === Te && (s = Se));
         a.avail_in > 0 && s === Ue && a.state.wrap > 0 && 0 !== t[a.next_in];
+
       )
         (xe.inflateReset(a), (s = xe.inflate(a, r)));
       switch (s) {
