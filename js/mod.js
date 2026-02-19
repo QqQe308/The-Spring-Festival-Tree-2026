@@ -17,7 +17,7 @@ let VERSION = {
 };
 
 let changelog = `
-<h2>v0.61 Fix-3 2026/02/19<br></h2>
+<h2>v0.62 Fix-3 2026/02/19<br></h2>
 <h3>- 修复几个小bug<br>
 - 游戏结局：1e13000 航迹<br><br></h3>
 <h2>v0.6 Warmth 2026/02/17 ~ 2026/02/19<br></h2>

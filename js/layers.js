@@ -4762,7 +4762,7 @@ addLayer("n", {
         return player.n.resets.gte(1000);
       },
       toggles: [["n", "auto5"]],
-      effectDescription: "解锁自动简并（初级，达到要求自动重置）",
+      effectDescription: "解锁自动简并（达到要求自动重置）",
     },
   },
   upgrades: {
@@ -5493,7 +5493,7 @@ addLayer("e", {
     13: {
       name: "EC3 决策反思",
       challengeDescription() {
-        return "思维导流器被禁用，资源倍率锁定在0.0001，航迹获取量大幅降低";
+        return "思维导流器被禁用，资源倍率锁定在0.0001，航迹获取量大幅降低<br>在挑战中，购买完所有希望升级可解锁新的反应堆";
       },
       unlocked() {
         return hm("n", 17);
@@ -5646,7 +5646,7 @@ addLayer("e", {
     31: {
       name: "EC7 三重枷锁",
       challengeDescription() {
-        return "同时进入EC1、EC2、EC3<br>解锁新的反物质升级";
+        return "同时进入EC1、EC2、EC3，解锁新的反物质升级<br>在本挑战中，可以同时获得EC1、2、3、7的挑战精华";
       },
       unlocked() {
         return hu("w", 54);
@@ -5685,10 +5685,10 @@ addLayer("e", {
     32: {
       name: "EC8 永恒轮回",
       challengeDescription() {
-        return "同时进入EC4、EC5、EC6";
+        return "同时进入EC4、EC5、EC6<br>在本挑战中，可以同时获得EC4、5、6、8挑战精华";
       },
       unlocked() {
-        return hu("w", 54);
+        return hu("w", 55);
       },
       goalDescription() {
         return "获取 " + format(player.e.maxpoints[7]) + " 熵";
@@ -5767,7 +5767,11 @@ addLayer("w", {
     essence: {
       title: "Essence _ 挑战精华",
       body() {
-        return "在熵挑战中，如果达到了1e16熵，可以获取对应的挑战精华，加成对应的能量条的等级。一般来说，获取挑战精华的顺序是4→2→5→3→1→6→7→8→9";
+       let a=""
+       if(hu("w",53)) a="、6"
+       if(hu("w",54)) a="、6、7"
+       if(hu("w",55)) a="、6、8、7"
+        return "在熵挑战中，如果达到了1e16熵，可以获取对应的挑战精华，加成对应的能量条的等级。一般来说，获取挑战精华的顺序是4、2、5、3、1"+a;
       },
     },
   },
