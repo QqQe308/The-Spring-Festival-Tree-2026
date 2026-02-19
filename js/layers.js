@@ -5869,7 +5869,11 @@ addLayer("w", {
               "#d17aec",
               "#a7a7a7",
             ];
-            for (let i = 0; i < 8; i++) {
+            let imax = 3;
+            for (let id = 51; id <= 55; id++) {
+             if (hu("w", id)) imax++;
+            }
+            for (let i = 0; i < imax; i++) {
               a =
                 a +
                 "你有 <h2 style='color:" +
@@ -5886,7 +5890,6 @@ addLayer("w", {
                 format(tmp.w.essenceEffect[i]) +
                 "</h2><br>";
             }
-            return a;
             return a;
           },
         ],
