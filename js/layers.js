@@ -5817,7 +5817,7 @@ addLayer("w", {
   },
   update(diff) {
     let challengeIds = [11, 12, 13, 21, 22, 23, 31, 32];
-    if (player.e.inChal) {
+    if (player.e.inChal&&hu("w",23)) {
       for (let i = 0; i < 8; i++) {
         if (inChallenge("e", challengeIds[i])) {
           player.w.essence[i] = player.w.essence[i].add(
