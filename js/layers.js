@@ -66,6 +66,7 @@ addLayer("d", {
               "1",
               "0.00001",
               "0",
+              //注：这只是一个显示，不代表后续层级真实的进度，后续可能会给这个距离系统加的完善一些，不是只显示一个数字
             ];
             let count = player.d.upgrades.length; // 已购买的数量
             if (count === 0)
@@ -165,11 +166,22 @@ addLayer("d", {
     },
     23: {
       title: "第八次跳跃",
-      description:
-        "解锁“温暖 (Warmth)”<br>(你可以重置中子树恢复中子定理)<br>正在制作中，恭喜通关！",
+      description: "解锁“温暖 (Warmth)”<br>(你可以重置中子树恢复中子定理)<br>",
       cost: n(60),
       unlocked() {
         return hm("n", 18);
+      },
+      currencyDisplayName: "中子定理",
+      currencyInternalName: "theorems",
+      currencyLayer: "n",
+    },
+    24: {
+      title: "第九次跳跃",
+      description:
+        "解锁“??? (???)”<br>(你可以重置中子树恢复中子定理)<br>正在制作中，恭喜通关！",
+      cost: n(450),
+      unlocked() {
+        return hu("w", 55);
       },
       currencyDisplayName: "中子定理",
       currencyInternalName: "theorems",
@@ -464,6 +476,49 @@ addLayer("d", {
       effectDescription:
         "要求:在挑战3中获得1000熵<br>解锁“光辉于熵增挑战(Light) IV”",
     },
+    27: {
+      requirementDescription: "解锁新剧情！",
+      done() {
+        return player.w.points.gte(1);
+      },
+      unlocked() {
+        return hm("d", 24);
+      },
+      effectDescription: "要求:获得 1 温暖<br>解锁“温暖于破除混乱(Disorder) I”",
+    },
+    28: {
+      requirementDescription: "解锁新剧情！",
+      done() {
+        return player.w.points.gte(1e10);
+      },
+      unlocked() {
+        return hm("d", 25);
+      },
+      effectDescription:
+        "要求:获得 1e10 温暖<br>解锁“温暖于破除混乱(Disorder) II”",
+    },
+    29: {
+      requirementDescription: "解锁新剧情！",
+      done() {
+        return player.w.points.gte(1e30);
+      },
+      unlocked() {
+        return hm("d", 26);
+      },
+      effectDescription:
+        "要求:获得 1e30 温暖<br>解锁“温暖于破除混乱(Disorder) III”",
+    },
+    30: {
+      requirementDescription: "解锁新剧情！",
+      done() {
+        return player.w.points.gte(1e45);
+      },
+      unlocked() {
+        return hm("d", 27);
+      },
+      effectDescription:
+        "要求:获得 1e45 温暖<br>解锁“温暖于破除混乱(Disorder) IV”",
+    },
   },
 }); //距离 D
 
@@ -523,6 +578,10 @@ addLayer("h", {
       points: n(0),
       wait: n(0),
       duration: n(0),
+      duration2: n(0),
+      duringDrain: n(0),
+      duringDrain2: n(0),
+      //分别是希望共振和希望共鸣，Player里面的是剩余时间，Tmp里面累计时间，Drain是点击时投入的资源数量
     };
   },
   color: "#feffbb",
@@ -534,7 +593,7 @@ addLayer("h", {
   },
   type: "normal",
   exponent() {
-    return n(0.5);
+    return inChallenge("e", 22) ? n(0) : n(0.5);
   },
   gainMult() {
     let mult = n(1);
@@ -542,8 +601,10 @@ addLayer("h", {
     if (hu("a", 13)) mult = mult.mul(be("a", 12));
     if (hu("a", 14)) mult = mult.mul(ue("a", 14));
     if (hu("a", 22)) mult = mult.mul(ue("a", 22));
+    if (hu("a", 61)) mult = mult.mul(ue("a", 61));
     if (hu("a", 25)) mult = mult.mul(10);
     if (hu("p", 12)) mult = mult.mul(tmp.p.energyEffect[1]);
+    if (ce("e", 32).gte(1)) mult = mult.mul(ce("e", 32));
     return mult;
   },
   gainExp() {
@@ -574,10 +635,14 @@ addLayer("h", {
   update(diff) {
     player.h.wait = player.h.wait.sub(diff).max(0);
     if (!hu("P", 14)) player.h.duration = player.h.duration.sub(diff).max(0);
+    if (!hu("w", 35)) player.h.duration2 = player.h.duration2.sub(diff).max(0);
     if (hu("P", 14)) player.h.duration = tmp.h.duration;
+    if (hu("w", 35)) player.h.duration2 = tmp.h.duration2;
+    if (hu("w", 35)) player.h.duringDrain2 = player.w.points;
+    if (hu("P", 14)) player.h.duringDrain = player.h.points;
   },
   autoUpgrade() {
-    return hm("P", 2) && player.P.auto2 && !player.e.inChal;
+    return hm("P", 2) && player.P.auto2 && (!player.e.inChal || hu("w", 33));
   },
   layerShown() {
     return hu("d", 11);
@@ -621,9 +686,46 @@ addLayer("h", {
     return a;
   },
   during() {
+    let a = player.h.duringDrain.max(10).log(10);
+    if (hu("P", 14)) a = a.mul(n(1).add(ue("P", 14)));
+    if (player.h.duration2.gt(0)) a = a.pow(tmp.h.during2);
+    if (player.h.duration.lte(0)) a = n(1);
+    return a;
+  }, //当前效果
+  duringPoints() {
     let a = player.h.points.max(10).log(10);
     if (hu("P", 14)) a = a.mul(n(1).add(ue("P", 14)));
+    if (player.h.duration2.gt(0)) a = a.pow(tmp.h.during2);
     return a;
+  }, //如果现在点击，效果的更新
+  duration2() {
+    let a = player.w.points.add(1).mul(10).log(10).pow(0.8).mul(10);
+    return a;
+  },
+  during2() {
+    let a = player.h.duringDrain2.add(1).mul(10).log(10).pow(0.45);
+    let t = n(10);
+    if (hu("w", 43)) t = n(2.5);
+    if (a.gte(3)) a = a.sub(3).div(t).add(3);
+    if (a.gte(4)) a = a.sub(4).div(5).add(4);
+    if (player.h.duration2.lte(0)) a = n(1);
+    if (player.e.inChal) a = n(1);
+    return a;
+  }, //当前效果
+  duringPoints2() {
+    let a = player.w.points.add(1).mul(10).log(10).pow(0.45);
+    let t = n(10);
+    if (hu("w", 43)) t = n(2.5);
+    if (a.gte(3)) a = a.sub(3).div(t).add(3);
+    if (a.gte(4)) a = a.sub(4).div(5).add(4);
+    return a;
+  }, //如果现在点击，效果的更新
+  doReset(resettingLayer) {
+    if (layers[resettingLayer].row > layers[this.layer].row) {
+      let kept = ["unlocked", "auto"];
+      if (hu("w", 21)) kept.push("duration2", "duringDrain2");
+      layerDataReset(this.layer, kept);
+    }
   },
   clickables: {
     11: {
@@ -659,20 +761,52 @@ addLayer("h", {
           "消耗所有的希望，但接下来的" +
           format(tmp.h.duration) +
           "秒内，航迹获取量翻" +
-          format(tmp.h.during) +
+          format(tmp.h.duringPoints) +
           "倍<br>剩余持续时间: " +
-          formatTime(player.h.duration)
+          formatTime(player.h.duration) +
+          "<br>当前效果: ×" +
+          format(tmp.h.during)
         );
       },
       onClick() {
         player.h.duration = tmp.h.duration;
+        player.h.duringDrain = player.h.points;
         player.h.points = n(0);
       },
       canClick() {
-        return player.h.duration.lte(0) && player.h.points.gte(10);
+        return player.h.points.gte(10) && !hu("P", 14);
       },
       unlocked() {
         return hm("p", 2);
+      },
+      style: { width: "200px" },
+    },
+    13: {
+      title() {
+        return "希望共鸣";
+      },
+      display: function () {
+        return (
+          "消耗所有的温暖，但接下来的" +
+          format(tmp.h.duration2) +
+          "秒内，“希望共振”效果^" +
+          format(tmp.h.duringPoints2, 4) +
+          "<br>剩余持续时间: " +
+          formatTime(player.h.duration2) +
+          "<br>当前效果: ^" +
+          format(tmp.h.during2, 4)
+        );
+      },
+      onClick() {
+        player.h.duration2 = tmp.h.duration2;
+        player.h.duringDrain2 = player.w.points;
+        player.w.points = n(0);
+      },
+      canClick() {
+        return player.w.points.gte(1) && !player.e.inChal && !hu("w", 35);
+      },
+      unlocked() {
+        return hu("w", 21);
       },
       style: { width: "200px" },
     },
@@ -860,7 +994,7 @@ addLayer("a", {
   },
   type: "normal",
   exponent() {
-    return n(0.6);
+    return inChallenge("e", 22) ? n(0) : n(0.6);
   },
   gainMult() {
     let mult = n(1);
@@ -868,6 +1002,8 @@ addLayer("a", {
     if (hu("a", 15)) mult = mult.mul(be("a", 13));
     if (hu("a", 21)) mult = mult.mul(ue("a", 21));
     if (hu("a", 25)) mult = mult.mul(10);
+    if (hu("a", 61)) mult = mult.mul(ue("a", 61));
+    if (hu("a", 62)) mult = mult.mul(ue("a", 62));
     if (hu("p", 13)) mult = mult.mul(tmp.p.energyEffect[2]);
     if (hu("a", 41)) mult = mult.mul(ue("a", 41));
 
@@ -923,6 +1059,10 @@ addLayer("a", {
       if (layers.a.buyables[13].canAfford() && layers.a.buyables[13].unlocked())
         layers.a.buyables[13].buy();
     }
+    if (hu("w", 34)) {
+      if (layers.a.buyables[14].canAfford() && layers.a.buyables[14].unlocked())
+        layers.a.buyables[14].buy();
+    }
   },
   electron() {
     let ee = n(0.5);
@@ -971,7 +1111,7 @@ addLayer("a", {
     }
   },
   autoUpgrade() {
-    return hm("P", 3) && player.P.auto3 && !player.e.inChal;
+    return hm("P", 3) && player.P.auto3 && (!player.e.inChal || hu("w", 33));
   },
   layerShown() {
     return hu("d", 12);
@@ -1105,8 +1245,7 @@ addLayer("a", {
       },
       effect() {
         let base = n(2);
-        if (inChallenge("e", 13) && be("a", 14).gte(1))
-          base = base.mul(be("a", 14));
+        if (be("a", 14).gte(1)) base = base.mul(be("a", 14));
         let eff = n(base).pow(gba(this.layer, this.id));
         return eff;
       },
@@ -1136,6 +1275,7 @@ addLayer("a", {
         let a = n(20);
         if (hu("p", 15)) a = a.add(tmp.p.energyEffect[4]);
         if (inChallenge("e", 11)) a = n(0);
+        if (inChallenge("e", 22)) a = n(0);
         return a;
       },
       style: { height: "150px" },
@@ -1169,8 +1309,7 @@ addLayer("a", {
       },
       effect() {
         let base = n(1.8);
-        if (inChallenge("e", 13) && be("a", 14).gte(1))
-          base = base.mul(be("a", 14));
+        if (be("a", 14).gte(1)) base = base.mul(be("a", 14));
         let eff = n(base).pow(gba(this.layer, this.id));
         return eff;
       },
@@ -1200,6 +1339,7 @@ addLayer("a", {
         let a = n(20);
         if (hu("p", 15)) a = a.add(tmp.p.energyEffect[4]);
         if (inChallenge("e", 11)) a = n(0);
+        if (inChallenge("e", 22)) a = n(0);
         return a;
       },
       style: { height: "150px" },
@@ -1233,8 +1373,7 @@ addLayer("a", {
       },
       effect() {
         let base = n(1.6);
-        if (inChallenge("e", 13) && be("a", 14).gte(1))
-          base = base.mul(be("a", 14));
+        if (be("a", 14).gte(1)) base = base.mul(be("a", 14));
         let eff = n(base).pow(gba(this.layer, this.id));
         return eff;
       },
@@ -1264,6 +1403,7 @@ addLayer("a", {
         let a = n(10);
         if (hu("p", 15)) a = a.add(tmp.p.energyEffect[4]);
         if (inChallenge("e", 11)) a = n(0);
+        if (inChallenge("e", 22)) a = n(0);
         return a;
       },
       style: { height: "150px" },
@@ -1282,7 +1422,7 @@ addLayer("a", {
       },
       display() {
         return (
-          "前三个反应堆的底数+" +
+          "前三个反应堆的底数×" +
           format(this.effect()) +
           "<br>价格：" +
           format(this.cost()) +
@@ -1296,7 +1436,7 @@ addLayer("a", {
         return player[this.layer].points.gte(this.cost());
       },
       effect() {
-        let eff = n(0.5).mul(gba(this.layer, this.id));
+        let eff = n(0.5).mul(gba(this.layer, this.id)).max(1);
         return eff;
       },
       buy() {
@@ -1319,10 +1459,15 @@ addLayer("a", {
           player[this.layer].buyables[this.id].max(target);
       },
       unlocked() {
-        return hu("h", 25) && inChallenge("e", 13);
+        return (
+          (hu("h", 25) && inChallenge("e", 13)) ||
+          (hu("w", 13) && !player.e.inChal)
+        );
       },
       purchaseLimit() {
         let a = n(10);
+        if (hu("p", 15) && hu("w", 41))
+          a = a.add(n(0.1).mul(tmp.p.energyEffect[4])).floor();
         if (inChallenge("e", 11)) a = n(0);
         return a;
       },
@@ -1414,6 +1559,7 @@ addLayer("a", {
       },
       effect() {
         let a = player.a.points.pow(0.2).max(1);
+        if (inChallenge("e", 31) && hu("a", 52)) a = a.pow(4);
         return a;
       },
       effectDisplay() {
@@ -1632,7 +1778,7 @@ addLayer("a", {
         return hu("a", 43) || hu("a", 51);
       },
       effect() {
-        let a = player.a.wormhole.max(10).log(308).pow(0.8);
+        let a = player.a.wormhole.max(308).log(308).pow(0.8);
         return a;
       },
       effectDisplay() {
@@ -1652,15 +1798,22 @@ addLayer("a", {
       description: "重新解锁所有反物质升级",
       cost: n(1e5),
       unlocked() {
-        return inChallenge("e", 11);
+        return inChallenge("e", 11) || (!player.e.inChal && hu("w", 22));
       },
     },
     52: {
       title: "物质协议 II",
-      description: "重新解锁所有希望升级",
+      description: function () {
+        return inChallenge("e", 31)
+          ? "增强“加速推进”的效果"
+          : "重新解锁所有希望升级";
+      },
       cost: n(1e6),
       unlocked() {
-        return inChallenge("e", 11) && hu("a", 51);
+        return (
+          (inChallenge("e", 11) || (!player.e.inChal && hu("w", 22))) &&
+          hu("a", 51)
+        );
       },
     },
     53: {
@@ -1676,7 +1829,10 @@ addLayer("a", {
         return "÷" + format(ue(this.layer, this.id));
       },
       unlocked() {
-        return inChallenge("e", 11) && hu("a", 52);
+        return (
+          (inChallenge("e", 11) || (!player.e.inChal && hu("w", 22))) &&
+          hu("a", 52)
+        );
       },
     },
     54: {
@@ -1693,7 +1849,10 @@ addLayer("a", {
         return "×" + format(ue(this.layer, this.id));
       },
       unlocked() {
-        return inChallenge("e", 11) && hu("a", 53);
+        return (
+          (inChallenge("e", 11) || (!player.e.inChal && hu("w", 22))) &&
+          hu("a", 53)
+        );
       },
     },
     55: {
@@ -1708,7 +1867,85 @@ addLayer("a", {
         return "÷" + format(ue(this.layer, this.id));
       },
       unlocked() {
-        return inChallenge("e", 11) && hu("a", 54);
+        return (
+          (inChallenge("e", 11) || (!player.e.inChal && hu("w", 22))) &&
+          hu("a", 54)
+        );
+      },
+    },
+    61: {
+      title: "破除混乱 I",
+      description: "航迹倍增希望粒子和反物质",
+      cost: n(0),
+      unlocked() {
+        return inChallenge("e", 31);
+      },
+      effect() {
+        let a = player.points.pow(0.7).max(1);
+        return a;
+      },
+      effectDisplay() {
+        return "×" + format(ue(this.layer, this.id));
+      },
+    },
+    62: {
+      title: "破除混乱 II",
+      description: "希望粒子倍增反物质",
+      cost: n(0),
+      unlocked() {
+        return inChallenge("e", 31);
+      },
+      effect() {
+        let a = player.h.points.pow(5).max(1);
+        return a;
+      },
+      effectDisplay() {
+        return "×" + format(ue(this.layer, this.id));
+      },
+    },
+    63: {
+      title: "破除混乱 III",
+      description: "航迹倍增航迹获取",
+      cost: n(1e10),
+      unlocked() {
+        return inChallenge("e", 31);
+      },
+      effect() {
+        let a = player.points.pow(5).max(1);
+        return a;
+      },
+      effectDisplay() {
+        return "×" + format(ue(this.layer, this.id));
+      },
+    },
+    64: {
+      title: "破除混乱 IV",
+      description: "反物质倍增航迹获取",
+      cost: n(1e25),
+      unlocked() {
+        return inChallenge("e", 31);
+      },
+      effect() {
+        let a = player.a.points.pow(3).max(1);
+        return a;
+      },
+      effectDisplay() {
+        return "×" + format(ue(this.layer, this.id));
+      },
+    },
+    65: {
+      title: "破除混乱 V",
+      description: "希望粒子倍增航迹获取",
+      cost: n(1e75),
+      unlocked() {
+        return inChallenge("e", 31);
+      },
+      effect() {
+        let a = player.h.points.pow(2).max(1);
+        return a;
+      },
+      effectDisplay() {
+        return "×" + format(ue(this.layer, this.id));
       },
     },
   },
@@ -1802,11 +2039,16 @@ addLayer("p", {
     let a = n(1);
     if (hu("p", 24) && !hu("a", 53)) a = a.div(tmp.p.energyEffect[6]);
     if (hu("y", 22)) a = a.div(100);
+    if (inChallenge("e", 21)) a = n(1 / 0);
     return a;
   },
   gainExp() {
     let exp = n(1);
     return exp;
+  },
+  directMult() {
+    let mult = n(1);
+    return mult;
   },
   row: 1,
   hotkeys: [
@@ -1828,7 +2070,6 @@ addLayer("p", {
 
     let a = n(t).pow(player.p.points).sub(1);
 
-    // 特殊加法（不是乘法）
     if (hm("n", 0)) a = a.add(1);
 
     // 普通乘法升级列表（效果直接用 ue 获取）
@@ -1850,21 +2091,21 @@ addLayer("p", {
       }
     }
 
-    // 特殊乘法（效果来自其他属性）
     if (hu("p", 14)) a = a.mul(tmp.p.energyEffect[3]);
     if (hm("p", 9)) a = a.mul(tmp.a.proton);
+    if (ce("e", 21).gte(1)) a = a.mul(ce("e", 21));
 
-    // 全局倍率
     if (player.n.mult.gte(0)) a = a.mul(player.n.mult);
 
-    // 幂运算
     if (hu("y", 31)) a = a.pow(n(1).add(be("y", 22)));
 
     // 软上限
     let e = n(0.3);
+    let e2 = n(0.1);
     if (hm("p", 8)) e = n(0.5);
+    if (hu("w", 44)) e2 = n(0.12);
     if (a.gte(1e10)) a = a.div(1e10).pow(e).mul(1e10);
-    if (a.gte(1e40)) a = a.div(1e40).pow(0.1).mul(1e40);
+    if (a.gte(1e40)) a = a.div(1e40).pow(e2).mul(1e40);
 
     return a;
   },
@@ -1875,7 +2116,10 @@ addLayer("p", {
   energyLevelNext() {
     const next = [];
     for (let i = 0; i < 8; i++) {
-      const targetLevel = player.p.energyLevel[i].floor().plus(1);
+      let targetLevel = player.p.energyLevel[i].floor();
+      if (targetLevel.gt(0)) targetLevel = targetLevel.plus(1);
+      if (inChallenge("e", 21)) targetLevel = targetLevel.add(40);
+      targetLevel = targetLevel.sub(tmp.w.essenceEffect[i]);
       const totalForTarget = getTotalEnergyFromLevel(i, targetLevel);
       next.push(totalForTarget.max(0));
     }
@@ -1922,15 +2166,24 @@ addLayer("p", {
     return effect;
   },
   update(diff) {
-    player.p.energy = player.p.energy.add(tmp.p.energy.mul(diff));
+    if (!inChallenge("e", 21))
+      player.p.energy = player.p.energy.add(tmp.p.energy.mul(diff));
+    if (inChallenge("e", 21) && player.p.energy.lt(1e15))
+      player.p.energy = player.p.energy.add(tmp.p.energy.mul(diff)).min(1e15);
     if (hm("p", 2) && player.a.upgrades.indexOf(32) == -1)
       player.a.upgrades.push(32);
     for (let i = 0; i < 8; i++) {
-      player.p.energyLevel[i] = getLevelFromTotalEnergy(
-        i,
-        player.p.energyDrain[i],
-      ).max(0);
+      player.p.energyLevel[i] = tmp.p.energyLevelCalculate[i];
     }
+  },
+  energyLevelCalculate() {
+    let a = [n(0), n(0), n(0), n(0), n(0), n(0), n(0), n(0)];
+    for (let i = 0; i < 8; i++) {
+      a[i] = getLevelFromTotalEnergy(i, player.p.energyDrain[i]).max(0);
+      if (inChallenge("e", 21)) a[i] = a[i].sub(40).min(-15);
+      a[i] = a[i].add(tmp.w.essenceEffect[i]);
+    }
+    return a;
   },
   autoPrestige() {
     return hm("n", 5) && player.n.auto;
@@ -2817,7 +3070,7 @@ addLayer("P", {
   },
   type: "normal",
   exponent() {
-    return n(0.12);
+    return inChallenge("e", 22) ? n(0) : n(0.12);
   },
   gainMult() {
     let mult = n(1);
@@ -2893,12 +3146,35 @@ addLayer("P", {
   },
   update(diff) {
     player.P.computility = player.P.computility.max(tmp.P.computility);
-    if (hm("n", 2) && player.P.upgrades.length == 0)
-      player.P.upgrades.push(11, 12, 13, 14, 15, 21, 22, 23, 24, 25);
+    if (hm("n", 2)) {
+      const upgradeIds = [11, 12, 13, 14, 15, 21, 22, 23, 24, 25];
+      for (let id of upgradeIds) {
+        if (!hu("P", id)) {
+          if (!player.P.upgrades.includes(id)) {
+            player.P.upgrades.push(id);
+          }
+        }
+      }
+      player.n.gaveProcessorUpgrades = true; // 标记已执行
+    }
+    if (hu("w", 15)) {
+      const upgradeIds2 = [31, 32, 33, 34, 35];
+      for (let id of upgradeIds2) {
+        if (!hu("P", id)) {
+          if (!player.P.upgrades.includes(id)) {
+            player.P.upgrades.push(id);
+          }
+        }
+      }
+      player.n.gaveProcessorUpgrades = true; // 标记已执行
+    }
     if (hm("n", 4)) player.P.points = player.P.points.max(100);
   },
   layerShown() {
     return hu("d", 14);
+  },
+  autoUpgrade() {
+    return hu("w", 31);
   },
   tabFormat: {
     处理器: {
@@ -3001,6 +3277,7 @@ addLayer("P", {
         let a = player.P.computility;
         if (a.gte(100)) a = a.div(100).pow(0.1).mul(100);
         if (hu("P", 25)) a = a.mul(ue("P", 25));
+        if (hu("P", 32)) a = a.pow(ue("P", 32));
         if (hu("P", 31)) a = a.mul(1e2);
         return a.mul(1e-2);
       },
@@ -3018,6 +3295,7 @@ addLayer("P", {
         let a = player.P.computility.mul(1e-1);
         if (a.gte(100)) a = a.div(100).pow(0.1).mul(100);
         if (hu("P", 25)) a = a.mul(ue("P", 25));
+        if (hu("P", 32)) a = a.pow(ue("P", 32));
         if (hu("P", 31)) a = a.mul(1e2);
         return a.mul(1e-2);
       },
@@ -3038,6 +3316,7 @@ addLayer("P", {
         let a = player.P.computility.mul(1e-2);
         if (a.gte(100)) a = a.div(100).pow(0.1).mul(100);
         if (hu("P", 25)) a = a.mul(ue("P", 25));
+        if (hu("P", 32)) a = a.pow(ue("P", 32));
         if (hu("P", 31)) a = a.mul(1e2);
         return a.mul(1e-2);
       },
@@ -3052,12 +3331,13 @@ addLayer("P", {
     },
     14: {
       title: "超级自动",
-      description: "“希望共振”时间始终处于最大值，基于算力增强其效果",
+      description: "“希望共振”效果始终处于最大值，基于算力增强其效果",
       cost: n(1000),
       effect() {
         let a = player.P.computility.mul(1e-3);
         if (a.gte(100)) a = a.div(100).pow(0.4).mul(100);
         if (hu("P", 25)) a = a.mul(ue("P", 25));
+        if (hu("P", 32)) a = a.pow(ue("P", 32));
         if (hu("P", 31)) a = a.mul(1e2);
         return a.mul(1e-2);
       },
@@ -3078,6 +3358,7 @@ addLayer("P", {
         let a = player.P.computility.pow(0.1).max(1);
         if (a.gte(100)) a = a.div(100).pow(0.1).mul(100);
         if (hu("P", 25)) a = a.mul(ue("P", 25));
+        if (hu("P", 32)) a = a.pow(ue("P", 32));
         return a;
       },
       unlocked() {
@@ -3163,6 +3444,67 @@ addLayer("P", {
         return hm("n", 9);
       },
     },
+    32: {
+      title: "算法突破",
+      description: "基于算力，指数倍增第一行所有升级效果",
+      cost: n(1e165),
+      effect() {
+        let a = player.P.computility.max(10).log(5).log(5).pow(0.1);
+        return a;
+      },
+      effectDisplay() {
+        return "^" + format(ue(this.layer, this.id));
+      },
+      unlocked() {
+        return hu("P", 31);
+      },
+    },
+    33: {
+      title: "情感更新",
+      description: "基于算力，被动获取温暖",
+      cost: n(1e200),
+      effect() {
+        let a = player.P.computility.max(10).log(10).sub(1);
+        if (a.gte(10)) a = a.div(10).pow(0.5).mul(10);
+        if (hu("P", 35)) a = a.mul(1e2);
+        return a.mul(1e-2);
+      },
+      unlocked() {
+        return hu("P", 32);
+      },
+      effectDisplay() {
+        return hu("P", 35)
+          ? "×" + format(ue(this.layer, this.id))
+          : format(ue(this.layer, this.id).mul(100)) + "%";
+      },
+    },
+    34: {
+      title: "核素更新",
+      description: "基于算力，被动获取中子素和简并次数",
+      cost: n("1e400"),
+      effect() {
+        let a = player.P.computility.max(10).log(10).sub(1);
+        if (a.gte(10)) a = a.div(10).pow(0.6).mul(10);
+        if (hu("P", 35)) a = a.mul(1e2);
+        return a.mul(1e-2);
+      },
+      unlocked() {
+        return hu("P", 33);
+      },
+      effectDisplay() {
+        return hu("P", 35)
+          ? "×" + format(ue(this.layer, this.id))
+          : format(ue(this.layer, this.id).mul(100)) + "%";
+      },
+    },
+    35: {
+      title: "终极更新",
+      description: "升级31的效果对前两个升级也生效",
+      cost: n("1e700"),
+      unlocked() {
+        return hu("P", 34);
+      },
+    },
   },
 }); //处理器 P
 addLayer("y", {
@@ -3202,7 +3544,7 @@ addLayer("y", {
     points: {
       title: "Yearning _ 思念",
       body() {
-        return "思念(Yearning)，这是游戏中的第五个层级。在这里，一种新的资源将被自动生产——思念，这将计算“思念指数”的获取，并解锁更多新的功能。思念是被动获得的资源，因此无需进行重置，它的起始点为：1e64航迹、1e85希望粒子、1e63反物质。前期，思念的获取量可能较慢，但随后会迅速增长";
+        return "思念(Yearning)，这是游戏中的第五个层级。在这里，一种新的资源将被自动生产——思念，这将计算“思念指数”的获取，并解锁更多新的功能。思念是被动获得的资源，因此无需进行重置，它的起始点为：1e64航迹、1e85希望粒子、1e63反物质。前期，思念的获取量可能较慢，但随后会迅速增长，1e1000时到达软上限";
       },
     },
     yearning: {
@@ -3251,6 +3593,7 @@ addLayer("y", {
     if (hu("y", 24)) exp = exp.add(ue("y", 24));
     if (hu("y", 32)) exp = exp.add(be("y", 23));
     if (hu("n", 41)) exp = exp.add(ue("n", 41));
+    if (inChallenge("e", 22)) exp = n(0);
     let t = player.points.max(10).log(10).sub(64).div(6.4).max(0).pow(exp);
     let h = player.h.points.max(10).log(10).sub(85).div(8).max(0).pow(exp);
     let a = player.a.points.max(10).log(10).sub(63).div(6.3).max(0).pow(exp);
@@ -3273,7 +3616,10 @@ addLayer("y", {
     let gain = t.mul(h).mul(a);
     if (hm("n", 2)) gain = gain.add(0.1);
     gain = gain.mul(mult).max(0);
-    if (gain.gte("1e1000")) gain = gain.div("1e1000").pow(0.3).mul("1e1000");
+    let softcap = n(0.3);
+    if (hu("w", 45)) softcap = n(0.5);
+    if (gain.gte("1e1000"))
+      gain = gain.div("1e1000").pow(softcap).mul("1e1000");
 
     if (inChallenge("e", 12)) gain = gain.pow(2);
 
@@ -3299,7 +3645,7 @@ addLayer("y", {
       text +=
         "从其他效果中吸收<h2 style='color:#ff0099;'> " +
         format(mult, 3) +
-        " </h2>思念<br>";
+        "</h2> 思念<br>";
       text +=
         "四者相乘，每秒获取 <h2 style='color:#ff0099;'>" +
         format(gain, 3) +
@@ -3321,7 +3667,7 @@ addLayer("y", {
   row: 1,
   hotkeys: [{ key: "QqQe", description: "" }],
   autoUpgrade() {
-    return hm("n", 10) && player.n.auto4 && !player.e.inChal;
+    return hm("n", 10) && player.n.auto4 && (!player.e.inChal || hu("w", 33));
   },
   update(diff) {
     player.y.points = player.y.points.add(tmp.y.points[1].mul(diff));
@@ -3503,6 +3849,7 @@ addLayer("y", {
       effect() {
         let a = player.y.points.max(10).log(10).pow(2).div(150);
         if (a.gte(5)) a = a.sub(5).div(100).add(5);
+        if (a.gte(500)) a = a.div(500).pow(0.1).mul(500);
         return a;
       },
       effectDisplay() {
@@ -4094,6 +4441,7 @@ addLayer("n", {
   gainMult() {
     let m = n(1);
     if (hu("n", 101)) m = m.mul(ue("n", 101));
+    if (hu("w", 42)) m = m.mul(ue("w", 42));
     return m;
   },
   gainExp() {
@@ -4113,15 +4461,34 @@ addLayer("n", {
   },
   row: 2,
   hotkeys: [{ key: "n", description: "" }],
+  passiveGeneration() {
+    mult = n(0);
+    if (hu("P", 34)) mult = mult.add(ue("P", 34));
+    return mult;
+  },
   update(diff) {
     player.n.mult = tmp.n.mult;
     player.n.maxp = player.p.points.max(player.n.maxp);
+    if (hu("P", 34))
+      player.n.resets = player.n.resets.add(
+        tmp.n.resets.mul(ue("P", 34)).mul(diff),
+      );
+  },
+  resets() {
+    let a = n(1);
+    if (hu("n", 101) && hu("w", 12)) a = a.mul(ue("n", 101));
+    if (hu("w", 42)) a = a.mul(ue("w", 42));
+    return a;
+  },
+  autoPrestige() {
+    return hm("n", 19) && player.n.auto5;
   },
   onPrestige() {
-    player.n.resets = player.n.resets.add(1);
+    player.n.resets = player.n.resets.add(tmp.n.resets);
     player.a.electron = n(0);
     player.a.proton = n(0);
     player.a.neutron = n(0);
+    player.e.points = n(0);
     if (hm("n", 13)) player.p.points = player.p.points.max(player.n.maxp);
   },
   layerShown() {
@@ -4236,6 +4603,18 @@ addLayer("n", {
         ["infobox", "text4"],
       ],
     },
+  },
+  automate() {
+    if (hu("w", 32)) {
+      if (layers.n.buyables[11].canAfford() && layers.n.buyables[11].unlocked())
+        layers.n.buyables[11].buy();
+      if (layers.n.buyables[12].canAfford() && layers.n.buyables[12].unlocked())
+        layers.n.buyables[12].buy();
+      if (layers.n.buyables[13].canAfford() && layers.n.buyables[13].unlocked())
+        layers.n.buyables[13].buy();
+      if (layers.n.buyables[14].canAfford() && layers.n.buyables[14].unlocked())
+        layers.n.buyables[14].buy();
+    }
   },
   milestones: {
     0: {
@@ -4377,6 +4756,14 @@ addLayer("n", {
       },
       effectDescription: "解锁一个距离升级",
     },
+    19: {
+      requirementDescription: "NM20: 简并 1000 次",
+      done() {
+        return player.n.resets.gte(1000);
+      },
+      toggles: [["n", "auto5"]],
+      effectDescription: "解锁自动简并（初级，达到要求自动重置）",
+    },
   },
   upgrades: {
     //标题，描述，价格，联系，效果，显示
@@ -4442,7 +4829,7 @@ addLayer("n", {
     ),
     33: createUpgrade(
       "NS33",
-      "进行第二行层级重置时，不重置电子、质子、中子的数量",
+      "除了中子重置时，不重置电子、质子、中子的数量",
       n(2),
       ["22"],
     ),
@@ -4452,7 +4839,10 @@ addLayer("n", {
       n(5),
       ["31", "32"],
       function () {
-        return player.n.resets.max(0).pow(0.75).div(3);
+        let a = player.n.resets.max(0).pow(0.75).div(3);
+        if (a.gte(100)) a = a.div(100).pow(0.5).mul(100);
+        if (a.gte(250)) a = a.div(250).pow(0.1).mul(250);
+        return a;
       },
       function () {
         return "+" + format(this.effect());
@@ -4520,7 +4910,7 @@ addLayer("n", {
     ),
     71: createUpgrade(
       "NS71",
-      "简并次数加强能量产出",
+      "简并次数加强能量获取",
       n(4),
       ["61"],
       function () {
@@ -4532,7 +4922,7 @@ addLayer("n", {
     ),
     72: createUpgrade(
       "NS72",
-      "简并次数加强算力产出",
+      "简并次数加强算力获取",
       n(4),
       ["62"],
       function () {
@@ -4632,11 +5022,17 @@ addLayer("n", {
     ),
     101: createUpgrade(
       "NS101",
-      "简并次数加强中子素产出",
+      function () {
+        return hu("w", 21)
+          ? "简并次数加强中子素和简并次数获取"
+          : "简并次数加强中子素获取";
+      },
       n(8),
       ["91", "92", "93"],
       function () {
-        return player.n.resets.max(1).pow(0.4);
+        let a = player.n.resets.max(1).pow(0.4);
+        if (a.gte(10)) a = a.div(10).pow(0.75).mul(10);
+        return a;
       },
       function () {
         return "×" + format(this.effect());
@@ -4879,7 +5275,7 @@ addLayer("e", {
     challenges: {
       title: "EntropyChallenges _ 熵挑战",
       body() {
-        return "在挑战中，会基于航迹、希望粒子、反物质的数量获取熵，对于每一个挑战取熵的最大值进行增益。另外，在挑战中，中子素的里程碑以及一些Qol的效果失效，也就是说，进入挑战会重置反物质升级、聚变核心数量等，并且自动购买升级全部被禁用。";
+        return "在挑战中，会基于航迹、希望粒子、反物质的数量获取熵，对于每一个挑战取熵的最大值进行增益。另外，在挑战中，中子素的里程碑以及一些Qol的效果失效，也就是说，进入挑战会重置反物质升级、聚变核心数量等，并且自动购买升级全部被禁用。但是，NS33的效果仍然保留。";
       },
     },
   },
@@ -4892,7 +5288,7 @@ addLayer("e", {
       unlocked() {
         return true;
       },
-      maxpoints: [n(0), n(0), n(0)],
+      maxpoints: [n(0), n(0), n(0), n(0), n(0), n(0), n(0), n(0), n(0)],
       inChal: false,
     };
   },
@@ -4919,10 +5315,16 @@ addLayer("e", {
   },
   points() {
     let exp = n(3);
-    let t = player.points.max(10).log(10).sub(20).div(15).max(0).pow(exp);
-    let h = player.h.points.max(10).log(10).sub(15).div(18).max(0).pow(exp);
-    let a = player.a.points.max(10).log(10).sub(5).div(10).max(0).pow(exp);
+    if (hu("w", 41)) exp = exp.add(ue("w", 41));
+    if (hu("w", 25)) exp = exp.add(0.5);
+    let t = player.points.max(10).log(10).sub(20).div(15).max(0);
+    if (t.gt(1) || !hu("w", 24)) t = t.pow(exp);
+    let h = player.h.points.max(10).log(10).sub(15).div(18).max(0);
+    if (h.gt(1) || !hu("w", 24)) h = h.pow(exp);
+    let a = player.a.points.max(10).log(10).sub(5).div(10).max(0);
+    if (a.gt(1) || !hu("w", 24)) a = a.pow(exp);
     let mult = n(1);
+    if (ce("e", 23).gte(1)) mult = mult.mul(ce("e", 23));
     let gain = t.mul(h).mul(a);
     gain = gain.mul(mult).max(0);
 
@@ -4948,7 +5350,7 @@ addLayer("e", {
       text +=
         "从其他效果中吸收<h2 style='color:#8b3300;'> " +
         format(mult, 3) +
-        " </h2>思念<br>";
+        "</h2> 熵<br>";
       text +=
         "四者相乘，每秒获取 <h2 style='color:#8b3300;'>" +
         format(gain, 3) +
@@ -4962,15 +5364,16 @@ addLayer("e", {
   },
   hotkeys: [{ key: "308", description: "" }],
   update(diff) {
+    let challengeIds = [11, 12, 13, 21, 22, 23, 31, 32];
     if (player.e.inChal) {
-      player.e.points = player.e.points.add(tmp.e.points[1].mul(diff));
-      if (inChallenge("e", 11))
-        player.e.maxpoints[0] = player.e.maxpoints[0].max(player.e.points);
-      if (inChallenge("e", 12))
-        player.e.maxpoints[1] = player.e.maxpoints[1].max(player.e.points);
-      if (inChallenge("e", 13))
-        player.e.maxpoints[2] = player.e.maxpoints[2].max(player.e.points);
+      for (let i = 0; i < 8; i++) {
+        if (inChallenge("e", challengeIds[i])) {
+          player.e.maxpoints[i] = player.e.maxpoints[i].max(player.e.points);
+        }
+      }
     }
+    if (player.e.inChal || hu("w", 11))
+      player.e.points = player.e.points.add(tmp.e.points[1].mul(diff));
   },
   layerShown() {
     return hu("d", 22);
@@ -5022,6 +5425,7 @@ addLayer("e", {
       },
       onEnter() {
         player.devSpeed = n(0);
+        player.e.points = n(0);
         player.e.inChal = true;
         player.a.upgrades = [];
         player.p.points = n(0);
@@ -5030,6 +5434,7 @@ addLayer("e", {
       onExit() {
         player.e.inChal = false;
         player.p.points = player.n.maxp;
+        player.a.upgrades = [];
         player.e.points = n(0);
       },
       canComplete() {
@@ -5048,8 +5453,10 @@ addLayer("e", {
     12: {
       name: "EC2 思维缜密",
       challengeDescription() {
-        return "能量条被禁用，希望升级无法购买，但思念获取变成原来的平方";
-      }, //后续可能在这个挑战中刷思念
+        return hu("w", 51)
+          ? "能量条被禁用，希望升级无法购买，但思念获取变成原来的平方(似乎可以用来刷中子定理…)"
+          : "能量条被禁用，希望升级无法购买，但思念获取变成原来的平方";
+      },
       unlocked() {
         return hm("n", 16);
       },
@@ -5058,6 +5465,7 @@ addLayer("e", {
       },
       onEnter() {
         player.devSpeed = n(0);
+        player.e.points = n(0);
         player.e.inChal = true;
         player.a.upgrades = [];
         player.p.points = n(0);
@@ -5066,6 +5474,7 @@ addLayer("e", {
       onExit() {
         player.e.inChal = false;
         player.p.points = player.n.maxp;
+        player.a.upgrades = [];
         player.e.points = n(0);
       },
       canComplete() {
@@ -5094,6 +5503,7 @@ addLayer("e", {
       },
       onEnter() {
         player.devSpeed = n(0);
+        player.e.points = n(0);
         player.e.inChal = true;
         player.a.upgrades = [];
         player.p.points = n(0);
@@ -5102,6 +5512,7 @@ addLayer("e", {
       onExit() {
         player.e.inChal = false;
         player.p.points = player.n.maxp;
+        player.a.upgrades = [];
         player.e.points = n(0);
       },
       canComplete() {
@@ -5117,9 +5528,612 @@ addLayer("e", {
         return "×" + format(ce(this.layer, this.id));
       },
     },
+    21: {
+      name: "EC4 聚变休眠",
+      challengeDescription() {
+        return "聚变核心不再能被获取，能量上限为1e15，所有能量条等级从-40开始，并且不能超过-15级";
+      },
+      unlocked() {
+        return hu("w", 51);
+      },
+      goalDescription() {
+        return "获取 " + format(player.e.maxpoints[3]) + " 熵";
+      },
+      onEnter() {
+        player.devSpeed = n(0);
+        player.e.points = n(0);
+        player.e.inChal = true;
+        player.a.upgrades = [];
+        player.p.points = n(0);
+        player.devSpeed = n(0);
+      },
+      onExit() {
+        player.e.inChal = false;
+        player.p.points = player.n.maxp;
+        player.a.upgrades = [];
+        player.e.points = n(0);
+      },
+      canComplete() {
+        return false;
+      },
+      rewardDescription:
+        "基于熵的最大值增益能量获取<br>(由于能量1e40的软上限，实际效果没那么强)",
+      rewardEffect() {
+        let a = player.e.maxpoints[3].add(1).pow(2.5);
+        if (a.gte(1e5)) a = a.div(1e5).pow(0.25).mul(1e5);
+        return a;
+      },
+      rewardDisplay() {
+        return "×" + format(ce(this.layer, this.id));
+      },
+    },
+    22: {
+      name: "EC5 资源沉寂",
+      challengeDescription() {
+        return "大部分资源的基础获取值锁定为1";
+      },
+      unlocked() {
+        return hu("w", 52);
+      },
+      goalDescription() {
+        return "获取 " + format(player.e.maxpoints[4]) + " 熵";
+      },
+      onEnter() {
+        player.devSpeed = n(0);
+        player.e.points = n(0);
+        player.e.inChal = true;
+        player.a.upgrades = [];
+        player.p.points = n(0);
+        player.devSpeed = n(0);
+      },
+      onExit() {
+        player.e.inChal = false;
+        player.p.points = player.n.maxp;
+        player.a.upgrades = [];
+        player.e.points = n(0);
+      },
+      canComplete() {
+        return false;
+      },
+      rewardDescription: "基于熵的最大值增益温暖获取<br>(在挑战中无效)",
+      rewardEffect() {
+        let a = player.e.maxpoints[4].add(1).pow(0.5);
+        if (a.gte(1e5)) a = a.div(1e5).pow(0.3).mul(1e5);
+        return a;
+      },
+      rewardDisplay() {
+        return "×" + format(ce(this.layer, this.id));
+      },
+    },
+    23: {
+      name: "EC6 对数深渊",
+      challengeDescription() {
+        return "航迹的获取量变为原来的对数，但底数为1.00000000000001";
+      },
+      unlocked() {
+        return hu("w", 53);
+      },
+      goalDescription() {
+        return "获取 " + format(player.e.maxpoints[5]) + " 熵";
+      },
+      onEnter() {
+        player.devSpeed = n(0);
+        player.e.points = n(0);
+        player.e.inChal = true;
+        player.a.upgrades = [];
+        player.p.points = n(0);
+        player.devSpeed = n(0);
+      },
+      onExit() {
+        player.e.inChal = false;
+        player.p.points = player.n.maxp;
+        player.a.upgrades = [];
+        player.e.points = n(0);
+      },
+      canComplete() {
+        return false;
+      },
+      rewardDescription: "基于熵的最大值增益熵获取",
+      rewardEffect() {
+        let a = player.e.maxpoints[5].add(1).pow(0.2);
+        if (a.gte(1e5)) a = a.div(1e5).pow(0.3).mul(1e5);
+        return a;
+      },
+      rewardDisplay() {
+        return "×" + format(ce(this.layer, this.id));
+      },
+    },
+    31: {
+      name: "EC7 三重枷锁",
+      challengeDescription() {
+        return "同时进入EC1、EC2、EC3<br>解锁新的反物质升级";
+      },
+      unlocked() {
+        return hu("w", 54);
+      },
+      goalDescription() {
+        return "获取 " + format(player.e.maxpoints[6]) + " 熵";
+      },
+      onEnter() {
+        player.devSpeed = n(0);
+        player.e.points = n(0);
+        player.e.inChal = true;
+        player.a.upgrades = [];
+        player.p.points = n(0);
+        player.devSpeed = n(0);
+      },
+      onExit() {
+        player.e.inChal = false;
+        player.p.points = player.n.maxp;
+        player.a.upgrades = [];
+        player.e.points = n(0);
+      },
+      countsAs: [11, 12, 13],
+      canComplete() {
+        return false;
+      },
+      rewardDescription: "基于熵的最大值增益航迹获取",
+      rewardEffect() {
+        let a = player.e.maxpoints[6].add(1).pow(10);
+        if (a.gte(1e100)) a = a.div(1e100).pow(0.8).mul(1e100);
+        return a;
+      },
+      rewardDisplay() {
+        return "×" + format(ce(this.layer, this.id));
+      },
+    },
+    32: {
+      name: "EC8 永恒轮回",
+      challengeDescription() {
+        return "同时进入EC4、EC5、EC6";
+      },
+      unlocked() {
+        return hu("w", 54);
+      },
+      goalDescription() {
+        return "获取 " + format(player.e.maxpoints[7]) + " 熵";
+      },
+      onEnter() {
+        player.devSpeed = n(0);
+        player.e.points = n(0);
+        player.e.inChal = true;
+        player.a.upgrades = [];
+        player.p.points = n(0);
+        player.devSpeed = n(0);
+      },
+      onExit() {
+        player.e.inChal = false;
+        player.p.points = player.n.maxp;
+        player.a.upgrades = [];
+        player.e.points = n(0);
+      },
+      countsAs: [21, 22, 23],
+      canComplete() {
+        return false;
+      },
+      rewardDescription: "基于熵的最大值增益希望粒子获取",
+      rewardEffect() {
+        let a = player.e.maxpoints[7].add(1).pow(6);
+        if (a.gte(1e75)) a = a.div(1e75).pow(0.8).mul(1e75);
+        return a;
+      },
+      rewardDisplay() {
+        return "×" + format(ce(this.layer, this.id));
+      },
+    },
+    //EC9 终极试炼 同时进行EC7和8
   },
 }); //熵 E
-
+addLayer("w", {
+  infoboxes: {
+    text1: {
+      title: "剧情28：温暖于破除混乱(Disorder) I",
+      body() {
+        return hm("d", 27)
+          ? "日志 - 余温新生<br>离开熵的领域后，那些在挑战外缓慢积累的熵并未消散，它们在系统底层沉淀成另一种能量——温暖。<br>不同于熵的混乱，温暖柔和而持续，像星火余温。<br>系统提示：消耗 1e10 熵（挑战外），可获得 1 温暖。<br>温暖无法直接加速航迹或反物质，但它能激活每个层级潜藏却未达峰值的协议。<br>我点开温暖层界面，看见希望、反物质、聚变核心……所有已征服的层级下方，都出现了一个新的进度条：“潜能缺口”。<br>第一个缺口来自希望层——那个最基础却从未真正满负荷运转的资源。<br>我试着注入 1 温暖。屏幕微微一亮，一行字浮现：“希望共振协议已突破理论峰值，产出效率永久提升 2 倍。”<br>原来，归途的最后一段，不是开辟新战场，而是让老伙计们，焕发第二春。"
+          : "剧情暂未解锁";
+      },
+    },
+    text2: {
+      title: "剧情29：温暖于破除混乱(Disorder) II",
+      body() {
+        return hm("d", 28)
+          ? "日志 - 余温蔓延<br>挑战四与五的大门缓缓开启。<br>在“聚变休眠”中，能量条被冻结成冰，聚变核心无法点燃；在“希望沉寂”里，希望粒子归于寂静，思念却翻倍生长，像黑暗中骤然亮起的星火。<br>我一次次踏入，又一次次退出，带回的不仅是更高的熵值，还有两道被激活的协议。<br>希望层传来回响：“希望共鸣”已上线。它不再是简单的共振，而是能自主增强“希望共振”的强度，让每一次共鸣都掀起更大的波澜。<br>处理器层也亮起绿灯：进阶自动化协议就绪。那些曾经需要我亲手点击的购买与升级，如今交由系统打理，我终于可以抬起头，望向更深的星海。<br>屏幕上的日志自动滚动，像一首无人演奏的乐章。<br>我忽然明白——温暖不是燃料，它是催化剂，让旧有的系统自己长出新芽。"
+          : "剧情暂未解锁";
+      },
+    },
+    text3: {
+      title: "剧情30：温暖于破除混乱(Disorder) III",
+      body() {
+        return hm("d", 29)
+          ? "日志 - 余温燎原<br>挑战六、七紧随其后。<br>“对数深渊”中，所有数值被压缩成尘埃，又在尘埃里重新凝聚；“三重枷锁”下，EC1、2、3的困境同时降临，我却发现自己已能从容漫步——那些曾令我窒息的限制，如今成了丈量成长的刻度。<br>退出时，系统用数字迎接我：航迹突破1e10000，希望粒子、反物质、思念……每一列数字都像银河般绵长。<br>希望共鸣的效应已强得惊人，每一次共振都让整个层级微微颤抖。<br>而反物质层，那个尘封的第四反应堆终于点亮——它不再单独加成，而是将所有反应堆的效果拧成一股绳，形成完美的增幅闭环。<br>我将温暖注入其中，金色的数据流瞬间淹没屏幕。<br>原来，当温暖足够多时，它可以点燃整艘星舰的潜能。<br>窗外的星光依旧遥远，但我能感觉到，归途正在一寸一寸缩短。"
+          : "剧情暂未解锁";
+      },
+    },
+    text4: {
+      title: "剧情31：温暖于破除混乱(Disorder) IV",
+      body() {
+        return hm("d", 30)
+          ? "日志 - 余温成焰<br>第八个挑战“终极试炼”在眼前闭合。<br>那是EC4、5、6的叠加，是沉寂、压缩与归零的极致。我以为自己会被困其中，但挑战精华的出现改变了一切——<br>在挑战内积累的熵，达到阈值后竟能凝结成金色的印记，直接提升能量条的等级。<br>当我走出挑战时，八个能量条都已攀上前所未有的高度，航迹定格在1e13000。<br>450个中子定理在屏幕右上角闪烁，像这一路走来的勋章。<br>系统提示：所有挑战已征服，温暖层圆满。下一层“Yield”的入口，在导航图上浮现。<br>那是收获的时刻——在抵达太阳系之前，最后一次储备。<br>我回头看向温暖层的界面，那些曾经灰暗的升级按钮如今全部点亮，像一簇簇不灭的火焰。<br>原来，从熵的混乱中提炼出的温暖，最终燃成了照亮归途的光。<br>我深吸一口气，点击进入下一层。<br>家的方向，越来越近。"
+          : "剧情暂未解锁";
+      },
+    },
+    warmth: {
+      title: "Warmth _ 温暖",
+      body() {
+        return "温暖(Warmth)，这是游戏中的第八个层级。在挑战外达到1e16熵即可获得温暖，温暖可以被用来购买五行升级，但与其他升级不同的是，这里的升级在大部分情况下是按列顺序购买的，并且每一行升级有固定的主题。另外，在这里会解锁更多熵挑战，并会为前面的层级提供一系列的改动。在这一层级，大部分资源的数量级会急剧增长，准备好了吗？让我们用最热烈的暖意迎接新一层！";
+      },
+    },
+    essence: {
+      title: "Essence _ 挑战精华",
+      body() {
+        return "在熵挑战中，如果达到了1e16熵，可以获取对应的挑战精华，加成对应的能量条的等级。一般来说，获取挑战精华的顺序是4→2→5→3→1→6→7→8→9";
+      },
+    },
+  },
+  name: "Warmth",
+  symbol: "W",
+  position: 2,
+  startData() {
+    return {
+      points: n(0),
+      essence: [n(0), n(0), n(0), n(0), n(0), n(0), n(0), n(0), n(0)], //挑战精华
+      unlocked() {
+        return true;
+      },
+    };
+  },
+  color: "#ff5617",
+  type: "normal",
+  row: 2,
+  requires: n(1e16),
+  resource: "温暖",
+  baseResource: "熵",
+  baseAmount() {
+    return player.e.points;
+  },
+  type: "normal",
+  exponent() {
+    return n(0.8);
+  },
+  gainMult() {
+    let mult = n(1);
+    if (ce("e", 22).gte(1)) mult = mult.mul(ce("e", 22));
+    if (player.e.inChal) mult = n(1);
+    return mult;
+  },
+  gainExp() {
+    let exp = n(1);
+    return exp;
+  },
+  hotkeys: [{ key: "w", description: "" }],
+  layerShown() {
+    return hu("d", 23);
+  },
+  passiveGeneration() {
+    mult = n(0);
+    if (hu("P", 33)) mult = mult.add(ue("P", 33));
+    return mult;
+  },
+  update(diff) {
+    let challengeIds = [11, 12, 13, 21, 22, 23, 31, 32];
+    if (player.e.inChal) {
+      for (let i = 0; i < 8; i++) {
+        if (inChallenge("e", challengeIds[i])) {
+          player.w.essence[i] = player.w.essence[i].add(
+            tmp.w.resetGain.mul(diff),
+          );
+        }
+      }
+    }
+  },
+  onPrestige() {
+    player.e.points = n(0);
+  },
+  essenceEffect() {
+    let a = [n(0), n(0), n(0), n(0), n(0), n(0), n(0), n(0), n(0)];
+    for (let i = 0; i < 8; i++) {
+      a[i] = player.w.essence[i].max(1).log(2);
+    }
+    return a;
+  },
+  tabFormat: {
+    升级: {
+      content: [
+        ["infobox", "warmth"],
+        "main-display",
+        "prestige-button",
+        "resource-display",
+        "blank",
+        "upgrades",
+      ],
+    },
+    挑战精华: {
+      content: [
+        ["infobox", "essence"],
+        "main-display",
+        "prestige-button",
+        "resource-display",
+        "blank",
+        [
+          "display-text",
+          function () {
+            let a = "";
+            let colors = [
+              "#d18282",
+              "#e9ce97",
+              "#f2ec95",
+              "#ade788",
+              "#80e9cd",
+              "#6cadea",
+              "#d17aec",
+              "#a7a7a7",
+            ];
+            for (let i = 0; i < 8; i++) {
+              a =
+                a +
+                "你有 <h2 style='color:" +
+                colors[i] +
+                "; '>" +
+                format(player.w.essence[i]) +
+                "</h2> EC" +
+                (i + 1) +
+                "精华，能量条" +
+                (i + 1) +
+                "的等级 +<h2 style='color:" +
+                colors[i] +
+                "; '>" +
+                format(tmp.w.essenceEffect[i]) +
+                "</h2><br>";
+            }
+            return a;
+            return a;
+          },
+        ],
+      ],
+    },
+    剧情: {
+      content: [
+        "main-display",
+        "blank",
+        ["infobox", "text1"],
+        ["infobox", "text2"],
+        ["infobox", "text3"],
+        ["infobox", "text4"],
+      ],
+    },
+  },
+  upgrades: {
+    11: {
+      title: "机制更新 I",
+      description: "在挑战外也可以获得熵",
+      cost: n(0),
+    },
+    12: {
+      title: "机制更新 II",
+      description: "NS101对简并次数也生效",
+      cost: n(10),
+      unlocked() {
+        return hu("w", 11);
+      },
+    },
+    13: {
+      title: "机制更新 III",
+      description: "“奇异反应堆”在挑战外也可以购买",
+      cost: n(1e15),
+      unlocked() {
+        return hu("w", 12);
+      },
+    },
+    14: {
+      title: "机制更新 IV",
+      description: "第五个能量条对“奇异反应堆”也生效，但效果/10",
+      cost: n(1e23),
+      unlocked() {
+        return hu("w", 13);
+      },
+    },
+    15: {
+      title: "机制更新 V",
+      description: "重置时保留所有处理器升级",
+      cost: n(1e33),
+      unlocked() {
+        return hu("w", 14);
+      },
+    },
+    21: {
+      title: "功能扩展 I",
+      description: "在希望层级解锁“希望共鸣”<br>(在挑战中无效)",
+      tooltip: "其实这一行升级类型和上一行没有什么区别",
+      cost: n(15),
+      unlocked() {
+        return hu("w", 11);
+      },
+    },
+    22: {
+      title: "功能扩展 II",
+      description: "“物质协议”升级在挑战外也可以购买",
+      cost: n(100),
+      unlocked() {
+        return hu("w", 12) || hu("w", 21);
+      },
+    },
+    23: {
+      title: "功能扩展 III",
+      description:
+        "解锁新的标签页，如果你在挑战中达到了1e16熵，可以获取挑战精华",
+      cost: n(1e18),
+      unlocked() {
+        return hu("w", 13) || hu("w", 22);
+      },
+    },
+    24: {
+      title: "功能扩展 IV",
+      description:
+        "在熵挑战中，如果某一项资源对熵的加成小于1，则不受熵指数影响",
+      cost: n(1e25),
+      unlocked() {
+        return hu("w", 14) || hu("w", 23);
+      },
+    },
+    25: {
+      title: "功能扩展 V",
+      description: "熵的指数加0.5",
+      cost: n(1e35),
+      unlocked() {
+        return hu("w", 15) || hu("w", 24);
+      },
+    },
+    31: {
+      title: "游戏体验 I",
+      description: "自动购买处理器升级",
+      cost: n(50),
+      unlocked() {
+        return hu("w", 21);
+      },
+    },
+    32: {
+      title: "游戏体验 II",
+      description: "自动购买中子定理",
+      cost: n(1e6),
+      unlocked() {
+        return hu("w", 22) || hu("w", 31);
+      },
+    },
+    33: {
+      title: "游戏体验 III",
+      description: "在挑战中，仍然保留自动购买升级",
+      cost: n(1e19),
+      unlocked() {
+        return hu("w", 23) || hu("w", 32);
+      },
+    },
+    34: {
+      title: "游戏体验 IV",
+      description: "自动购买“奇异反应堆”",
+      cost: n(1e27),
+      unlocked() {
+        return hu("w", 24) || hu("w", 33);
+      },
+    },
+    35: {
+      title: "游戏体验 V",
+      description: "“希望共鸣”的效果始终处于最大值",
+      cost: n(1e40),
+      unlocked() {
+        return hu("w", 25) || hu("w", 34);
+      },
+    },
+    41: {
+      title: "资源加成 I",
+      description: "每个温暖升级使熵的指数加0.1",
+      effect() {
+        let a = n(0.1).mul(player.w.upgrades.length);
+        return a;
+      },
+      effectDisplay() {
+        return "+" + format(ue(this.layer, this.id));
+      },
+      cost: n(150),
+      unlocked() {
+        return hu("w", 31);
+      },
+    },
+    42: {
+      title: "资源加成 II",
+      description:
+        "如果所有中子研究都已被购买，则剩余的中子定理倍增中子素和简并次数获取",
+      effect() {
+        let a = n(1);
+        if (
+          player.n.theorems
+            .add(87)
+            .lte(
+              gba("n", 11)
+                .add(gba("n", 12))
+                .add(gba("n", 13))
+                .add(gba("n", 14)),
+            )
+        )
+          a = n(1.2).pow(player.n.theorems);
+        //用lte为了避免后续两个数值都很大，超出浮点数
+        if (a.gte(10)) a = a.div(10).pow(0.1).mul(10);
+        return a;
+      },
+      effectDisplay() {
+        return "×" + format(ue(this.layer, this.id));
+      },
+      cost: n(1e7),
+      unlocked() {
+        return hu("w", 32) || hu("w", 41);
+      },
+    },
+    43: {
+      title: "资源加成 III",
+      description: "弱化“希望共鸣”效果超过3时的软上限",
+      cost: n(1e20),
+      unlocked() {
+        return hu("w", 33) || hu("w", 42);
+      },
+    },
+    44: {
+      title: "资源加成 IV",
+      description: "弱化1e40能量的软上限(^0.1→^0.12)",
+      cost: n(1e29),
+      unlocked() {
+        return hu("w", 34) || hu("w", 43);
+      },
+    },
+    45: {
+      title: "资源加成 V",
+      description: "弱化1e1000思念的软上限",
+      cost: n(1e41),
+      unlocked() {
+        return hu("w", 35) || hu("w", 44);
+      },
+    },
+    51: {
+      title: "解锁挑战 I",
+      description: "解锁第四个熵挑战",
+      cost: n(1e8),
+      unlocked() {
+        return hu("w", 41);
+      },
+    },
+    52: {
+      title: "解锁挑战 II",
+      description: "解锁第五个熵挑战",
+      cost: n(1e10),
+      unlocked() {
+        return hu("w", 42) || hu("w", 51);
+      },
+    },
+    53: {
+      title: "解锁挑战 III",
+      description: "解锁第六个熵挑战",
+      cost: n(1e21),
+      unlocked() {
+        return hu("w", 43) || hu("w", 52);
+      },
+    },
+    54: {
+      title: "解锁挑战 IV",
+      description: "解锁第七个熵挑战",
+      cost: n(1e30),
+      unlocked() {
+        return hu("w", 44) || hu("w", 53);
+      },
+    },
+    55: {
+      title: "解锁挑战 V",
+      description: "解锁第八个熵挑战<br>解锁一个距离升级",
+      cost: n(1e44),
+      unlocked() {
+        return hu("w", 45) || hu("w", 54);
+      },
+    },
+  },
+}); //温暖 W
 
 addLayer("t", {
   infoboxes: {
@@ -5472,6 +6486,41 @@ addLayer("A", {
         return player.n.theorems.gte(60);
       },
       tooltip: "获得 60 个中子定理",
+    },
+    81: {
+      name: "能量沉默 复苏微笑",
+      done() {
+        return player.e.maxpoints[3].gte(1e10);
+      },
+      tooltip: "在挑战4中，获得 1e10 熵",
+    },
+    82: {
+      name: "思念沉寂 破障重生",
+      done() {
+        return player.e.maxpoints[4].gte(1e10);
+      },
+      tooltip: "在挑战5中，获得 1e10 熵",
+    },
+    83: {
+      name: "数值塌缩 再启征程",
+      done() {
+        return player.e.maxpoints[5].gte(1e10);
+      },
+      tooltip: "在挑战6中，获得 1e10 熵",
+    },
+    84: {
+      name: "三重连环 破局反制",
+      done() {
+        return player.e.maxpoints[6].gte(1e10);
+      },
+      tooltip: "在挑战7中，获得 1e10 熵",
+    },
+    85: {
+      name: "绝境反击 新层渐现",
+      done() {
+        return player.e.maxpoints[7].gte(1e10);
+      },
+      tooltip: "在挑战8中，获得 1e10 熵",
     },
   },
 }); //成就

@@ -6,7 +6,7 @@ let modInfo = {
   modFiles: ["layers.js", "tree.js"],
 
   discordName: "B站@QqQe308",
-  discordLink: "https://b23.tv/nUimzD9",
+  discordLink: "https://b23.tv/TVygZjo",
   initialStartPoints: new Decimal(0),
   offlineLimit: 1,
 };
@@ -17,7 +17,11 @@ let VERSION = {
 };
 
 let changelog = `
-<h2>v0.51 Fix-2 2026/02/17<br></h2>
+<h2>v0.6 Warmth 2026/02/17 ~ 2026/02/19<br></h2>
+<h3>- 添加第8个层级：温暖<br>
+- 修复一些bug与显示问题<br>
+- 游戏结局：1e13000 航迹<br><br></h3>
+<h2>v0.52 Fix-2 2026/02/17<br></h2>
 <h3>- 优化代码，修复一些逻辑问题和显示bug<br>
 - 春节快乐！<br>
 - 游戏结局：1e750 航迹<br><br></h3>
@@ -27,7 +31,7 @@ let changelog = `
 - 游戏结局：1e750 航迹<br><br></h3>
 <h2>v0.5 Beginning 2026/01/11～2026/02/16<br></h2>
 <h3>- 开始这份计划，进行基本构思<br>
-- 更新前7个层级:希望、反物质、聚变核心、处理器、思念、中子素、熵<br>
+- 添加前7个层级:希望、反物质、聚变核心、处理器、思念、中子素、熵<br>
 - 游戏结局：1e750 航迹<br><br></h3>
 `;
 
@@ -65,10 +69,14 @@ function getPointClick() {
   if (hu("a", 11)) m = m.mul(buyableEffect("a", 11));
   if (hu("a", 14)) m = m.mul(ue("a", 14));
   if (hu("a", 22)) m = m.mul(ue("a", 22));
+  if (hu("a", 63)) m = m.mul(ue("a", 63));
+  if (hu("a", 64)) m = m.mul(ue("a", 64));
+  if (hu("a", 65)) m = m.mul(ue("a", 65));
   if (hu("a", 25)) m = m.mul(10);
   if (hu("p", 11)) m = m.mul(tmp.p.energyEffect[0]);
   if (hm("p", 2) && player.h.duration.gt(0)) m = m.mul(tmp.h.during);
   if (player.n.mult.gte(0)) m = m.mul(player.n.mult);
+  // if (ce("e", 31).gte(1)) m = m.mul(ce("e", 31))
 
   if (m.gte(1e6)) m = m.div(1e6).pow(0.5).mul(1e6); //偷偷加个软上限
 
@@ -77,6 +85,8 @@ function getPointClick() {
   if (hu("y", 13)) e = e.add(buyableEffect("y", 11));
 
   m = m.pow(e);
+
+  if (inChallenge("e", 23)) m = m.log(1.00000000000001);
   return m;
 }
 
@@ -95,7 +105,7 @@ var displayThings = [
 ];
 
 function isEndgame() {
-  return player.points.gte("1e750");
+  return player.points.gte("1e13000");
 }
 
 var backgroundStyle = {};

@@ -288,8 +288,9 @@ function resetRow(row) {
 function startChallenge(layer, x) {
   let enter = false;
   if (!player[layer].unlocked || !tmp[layer].challenges[x].unlocked) return;
-  if (player[layer].activeChallenge == x) {
-    completeChallenge(layer, x);
+  if (player[layer].activeChallenge !== null) {
+    if (player[layer].activeChallenge != x) enter = true;
+    completeChallenge(layer, player[layer].activeChallenge);
     Vue.set(player[layer], "activeChallenge", null);
   } else {
     enter = true;
@@ -395,7 +396,7 @@ function gameLoop(diff) {
       let layer = TREE_LAYERS[x][item];
       player[layer].resetTime += diff;
       if (tmp[layer].passiveGeneration)
-        generatePoints(layer, diff * tmp[layer].passiveGeneration);
+        generatePoints(layer, n(diff).mul(tmp[layer].passiveGeneration));
       if (layers[layer].update) layers[layer].update(diff);
     }
   }
@@ -405,7 +406,7 @@ function gameLoop(diff) {
       let layer = OTHER_LAYERS[row][item];
       player[layer].resetTime += diff;
       if (tmp[layer].passiveGeneration)
-        generatePoints(layer, diff * tmp[layer].passiveGeneration);
+        generatePoints(layer, n(diff).mul(tmp[layer].passiveGeneration));
       if (layers[layer].update) layers[layer].update(diff);
     }
   }
