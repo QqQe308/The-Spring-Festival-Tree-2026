@@ -27,6 +27,15 @@ input {
 /* Can meens can be clicked/bought/etc */
 .can {
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+[onclick],
+.can,
+.clickable,
+button,
+a {
+  touch-action: manipulation;
 }
 
 .can:hover {
